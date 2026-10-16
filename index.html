@@ -19,6 +19,15 @@
 .roster-list-group{background:#d8f3e9;color:#116d63;font-size:12px;font-weight:800;padding:10px 9px;margin-top:10px;border-radius:8px}
 .roster-list-group small{font-weight:500}
 @media(max-width:420px){.cal .namecell{min-width:129px!important;max-width:129px!important;width:129px!important}.cal .nameinside .roster-name b{font-size:10px}}
+
+/* Monthly roster matches XLSX: five full-width group separators, named rows. */
+.cal .roster-group-row td{background:#d6f3e8!important;color:#12685d!important;text-align:left!important;font-weight:850!important;font-size:12px!important;padding:8px 10px!important;border-top:2px solid #a7ddcb!important;position:relative!important;left:auto!important;z-index:1!important}
+.cal .roster-group-row strong{white-space:normal;overflow-wrap:anywhere}
+.cal .roster-group-row .group-count{color:#3e8979;font-size:10px;margin-left:8px}
+.cal tr:has(.namecell) td.day{height:29px}
+.cal .namecell{background:#fff;box-shadow:1px 0 2px #b1cbc733}
+.cal td.off{background:#ffe1e6!important;color:#cf2f49!important;font-weight:900!important;font-size:12px!important}
+.cal td.work{color:#acbbc0}
 </style></head><body><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
 <div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="suggest()" placeholder="Tên OFF ngày/tháng ghi chú…&#10;VD: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tên · OFF · Ngày/tháng · Ghi chú</span><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div></section><section class="section results-section"><div class="quick-search"><input type="search" id="f-search" oninput="renderResults()" placeholder="🔎 Tìm tên, ngày hoặc ghi chú…"><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
 <div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Nhập lịch từ ảnh</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự cập nhật theo lịch OFF và ghi chú đã lưu. Sửa tay sẽ giữ bản nháp.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="shareDirty=true;try{localStorage.setItem('lich-off-share-draft-2026-10',this.value)}catch(e){}"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Tạo lại từ lịch</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
@@ -166,7 +175,7 @@ function fillSelectors(){const pick=(id,options)=>{let v=$(id).value;$(id).inner
 function renderResults(){const name=$('f-name').value,month=Number($('f-month').value),day=$('f-day').value,status=$('f-status').value,q=norm($('f-search').value);let items=db.records.filter(r=>(name==='ALL'||r.person===name)&&r.month===month&&(day==='ALL'||r.day===Number(day))&&(status==='ALL'||r.status===status)&&(!q||norm(r.note+' '+(staffBy(r.person)?.name||'')).includes(q))).map(r=>({...r,type:'record'}));if(name==='ALL'&&(status==='ALL'||status==='GHI CHÚ'))items.push(...db.notes.filter(n=>(!n.month||n.month===month)&&(day==='ALL'||n.day===Number(day))&&(!q||norm(n.text).includes(q))).map(n=>({...n,type:'note'})));items.sort((a,b)=>(a.day||0)-(b.day||0));$('results-count').textContent=items.length+' kết quả';$('large-profile').innerHTML='';let p=name!=='ALL'?staffBy(name):db.staff.find(s=>q&&norm(s.name).includes(q));if(p){$('large-profile').innerHTML=`<div class="profile">${avatar(p,true)}<div style="flex:1"><b style="font-size:19px">${esc(p.name)}</b><div class="sub">${esc(p.group)}</div><div class="photo-actions"><button class="mini-link" onclick="openStaff('${p.id}')">📷 Thêm / xem ảnh</button></div></div></div>`} $('results').innerHTML=items.length?items.map(r=>r.type==='note'?`<div class="result"><div class="avatar">📝</div><div class="result-main"><div class="row"><b>Ghi chú chung</b><span class="tag" style="background:#e7f4ff;color:#5185b2">GHI CHÚ</span></div><div class="small muted">${r.day?r.day+'/':''}${r.month?r.month+'/'+year:'Không gắn ngày'}</div><div class="note">${esc(r.text)}</div><button class="mini-link" onclick="deleteNote(${db.notes.indexOf(db.notes.find(n=>n.text===r.text&&n.day===r.day&&n.month===r.month))})">Xóa</button></div></div>`:`<div class="result">${avatar(staffBy(r.person))}<div class="result-main"><div class="row"><b>${esc(staffBy(r.person)?.name||'')}</b><span class="tag" style="${r.status==='OFF'?'':'background:#e0f6ee;color:#139173'}">${esc(r.status)}</span></div><div class="small muted">${r.day}/${r.month}/${year} · ${esc(staffBy(r.person)?.group||'')}</div><div class="note">🗒 ${esc(r.note||'Không có ghi chú')}</div><div><button class="mini-link" onclick="openCell('${r.person}',${r.day},${r.month})">Sửa</button><button class="mini-link" onclick="deleteRecord('${r.person}',${r.day},${r.month})">Xóa</button></div></div></div>`).join(''):'<div class="empty">Không tìm thấy lịch phù hợp</div>'}function deleteRecord(p,d,m){if(!confirm('Xóa dữ liệu ngày '+d+'/'+m+'?'))return;db.records=db.records.filter(r=>!(r.person===p&&r.day===d&&r.month===m));persist();renderAll()}function deleteNote(i){if(i<0||!confirm('Xóa ghi chú chung?'))return;db.notes.splice(i,1);persist();renderAll()}
 function changeMode(m){rosterMode=m;$('mode-grid').classList.toggle('selected',m==='grid');$('mode-list').classList.toggle('selected',m==='list');renderRoster()}function shiftDay(v){const max=dateMax(Number($('r-month').value));rosterDay=Math.max(1,Math.min(max,rosterDay+v));renderRoster()}function renderRoster(){
  const month=Number($('r-month').value||10),grp=$('r-group').value||'ALL',query=norm($('r-search').value),max=dateMax(month);
- const groups=DEPARTMENTS.map(group=>({group,people:db.staff.filter(p=>departmentName(p.group)===group&&(grp==='ALL'||departmentName(grp)===group)&&(!query||norm(p.name+' '+group).includes(query)))})).filter(g=>g.people.length);
+ const groups=DEPARTMENTS.map(group=>({group,people:db.staff.filter(p=>departmentName(p.group)===group&&(grp==='ALL'||departmentName(grp)===group)&&(!query||norm(p.name+' '+group).includes(query)))})).filter(g=>g.people.length||(!query&&grp==='ALL'));
  const count=groups.reduce((n,g)=>n+g.people.length,0);
  $('grid-view').classList.toggle('hidden',rosterMode!=='grid');
  $('list-view').classList.toggle('hidden',rosterMode!=='list');
@@ -195,49 +204,54 @@ function col(i){let s='';for(i++;i;i=Math.floor((i-1)/26))s=String.fromCharCode(
 function xmlText(v){return esc(String(v)).replace(/&#39;/g,'&apos;').replace(/&quot;/g,'&quot;')}
 function sheetXML(rows,options={}){
   const {main=false,max=31,widths=[],mergeRows=[]}=options;
-  let out=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:${col((rows[0]?.length||1)-1)}${rows.length}"/><sheetViews><sheetView workbookViewId="0" zoomScale="${main?65:85}" zoomScaleNormal="100">${main?'<pane xSplit="2" ySplit="1" topLeftCell="C2" activePane="bottomRight" state="frozen"/>':'<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>'}</sheetView></sheetViews><sheetFormatPr defaultRowHeight="19"/><cols>`;
+  const firstDay=main?1:2;
+  let out=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:${col((rows[0]?.length||1)-1)}${rows.length}"/><sheetViews><sheetView workbookViewId="0" zoomScale="${main?65:85}" zoomScaleNormal="100">${main?'<pane xSplit="1" ySplit="1" topLeftCell="B2" activePane="bottomRight" state="frozen"/>':'<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>'}</sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>`;
   const cols=rows[0]?.length||0;
-  for(let j=0;j<cols;j++)out+=`<col min="${j+1}" max="${j+1}" width="${widths[j]||(j===0?19:j===1?15:10)}" customWidth="1"/>`;
+  for(let j=0;j<cols;j++)out+=`<col min="${j+1}" max="${j+1}" width="${widths[j]??(j===0?24:10)}" customWidth="1"/>`;
   out+='</cols><sheetData>';
   rows.forEach((r,i)=>{
     const group=main&&mergeRows.includes(i+1),header=i===0;
-    let height=header?28:group?25:(main?Math.max(22,Math.min(78,26+Math.max(0,...r.slice(2,2+max).map(v=>String(v||'').length))*0.65)):23);
+    const notes=main&&!group&&!header?r.slice(firstDay,firstDay+max).map(v=>String(v||'').split('\n').slice(1).join('\n').length):[];
+    const height=header?27:group?25:main?(notes.some(n=>n>0)?Math.min(78,32+Math.max(...notes)*0.6):22):23;
     out+=`<row r="${i+1}" ht="${height.toFixed(0)}" customHeight="1">`;
     r.forEach((v,j)=>{
       if(v===null||v===undefined||v==='')return;
       const ref=col(j)+(i+1);
-      const style=header?1:group?2:main&&j>=2&&j<2+max&&String(v).startsWith('X')?3:main&&j>=2&&j<2+max?4:main&&j===0?5:0;
+      const style=header?1:group?2:main&&j>=firstDay&&j<firstDay+max&&String(v).startsWith('X')?3:main&&j>=firstDay&&j<firstDay+max?4:main&&j===0?5:0;
       if(typeof v==='number')out+=`<c r="${ref}" s="${style}"><v>${v}</v></c>`;
       else out+=`<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xmlText(v)}</t></is></c>`;
     });out+='</row>';
   });out+='</sheetData>';
   if(mergeRows.length)out+=`<mergeCells count="${mergeRows.length}">`+mergeRows.map(r=>`<mergeCell ref="A${r}:${col(cols-1)}${r}"/>`).join('')+'</mergeCells>';
-  out+=`<printOptions horizontalCentered="1"/><pageMargins left="0.2" right="0.2" top="0.4" bottom="0.4" header="0.1" footer="0.1"/><pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+  out+='<printOptions horizontalCentered="1"/><pageMargins left="0.2" right="0.2" top="0.4" bottom="0.4" header="0.1" footer="0.1"/><pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/></worksheet>';
   return out;
 }
+
 function exportXLSX(){
-  const month=Number($('r-month').value||10),max=dateMax(month),numCols=max+3;
-  const header=['NHÂN VIÊN','BỘ PHẬN',...Array.from({length:max},(_,i)=>String(i+1)),'TỔNG'];
+  // Main monthly sheet mirrors the on-screen roster: one sticky name column,
+  // a full-width group header, days 1–31 (or month length), and total OFF.
+  const month=Number($('r-month').value||10),max=dateMax(month);
+  const header=['STT / NHÂN VIÊN',...Array.from({length:max},(_,i)=>String(i+1)),'TỔNG OFF'];
   const main=[header],mergeRows=[];
-  // Retain departmental headings even when no one in a department has OFF.
-  const groups=[...new Set(db.staff.map(p=>p.group||'CHƯA PHÂN BỘ PHẬN'))];
-  for(const group of groups){
+  for(const group of DEPARTMENTS){
+    const people=db.staff.filter(p=>departmentName(p.group)===group);
     mergeRows.push(main.length+1);
-    main.push([String(group).toUpperCase()]);
-    for(const p of db.staff.filter(x=>(x.group||'CHƯA PHÂN BỘ PHẬN')===group)){
-      const days=Array.from({length:max},(_,i)=>{
-        const r=rec(p.id,i+1,month);
-        return r?.status==='OFF'?'X'+(r.note?'\n'+r.note:''):r?.status==='ĐI LÀM'?'✓':'';
+    main.push([group.toUpperCase()]);
+    people.forEach((p,i)=>{
+      const days=Array.from({length:max},(_,idx)=>{
+        const record=rec(p.id,idx+1,month);
+        return record?.status==='OFF'?'X'+(record.note?'\n'+record.note:''):record?.status==='ĐI LÀM'?'·':'';
       });
-      main.push([p.name,p.group,...days,db.records.filter(r=>r.person===p.id&&r.month===month&&r.status==='OFF').length]);
-    }
+      const offCount=days.filter(d=>d.startsWith('X')).length;
+      main.push([String(i+1)+'. '+p.name,...days,offCount]);
+    });
   }
-  // Empty date columns become very narrow; columns with notes are wider (but capped).
-  const widths=[19,15,...Array.from({length:max},(_,i)=>{
-    let maxLen=0,hasNote=false;
-    for(const p of db.staff){const r=rec(p.id,i+1,month);if(r?.status==='OFF'){maxLen=Math.max(maxLen,(r.note||'').length);hasNote=hasNote||Boolean(r.note)}}
-    return hasNote?Math.min(14,Math.max(9,Math.ceil(Math.sqrt(maxLen)*1.8))):maxLen?5:3.6;
-  }),7];
+  // Days without any OFF remain compact; days with notes get more room.
+  const widths=[26,...Array.from({length:max},(_,i)=>{
+    const recs=db.records.filter(r=>r.month===month&&r.day===i+1&&r.status==='OFF');
+    if(recs.some(r=>r.note))return 10;
+    return recs.length?4.3:3.4;
+  }),9];
   let details=[['Nhân viên','Bộ phận','Ngày','Tháng','Năm','Trạng thái','Ghi chú'],...db.records.slice().sort((a,b)=>a.month-b.month||a.day-b.day).map(r=>[staffBy(r.person)?.name||r.person,staffBy(r.person)?.group||'',r.day,r.month,year,r.status,r.note])];
   let notes=[['Ngày','Tháng','Năm','Ghi chú chung'],...db.notes.map(n=>[n.day||'',n.month||'',year,n.text])];
  const totals=[['Nhân viên','Bộ phận',...Array.from({length:12},(_,i)=>'Tháng '+(i+1)),'TỔNG OFF']];
