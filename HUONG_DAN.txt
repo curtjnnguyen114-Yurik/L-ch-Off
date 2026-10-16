@@ -1,0 +1,9 @@
+LỊCH OFF — PWA cho iPhone và Android
+
+1. Giải nén và đăng toàn bộ các file trong thư mục này lên một website HTTPS (ví dụ Netlify Drop, Cloudflare Pages, GitHub Pages). Không chỉ đăng index.html: cần cả manifest, icons và sw.js.
+2. Lấy link HTTPS được website cấp. Đây là link dùng chung trên iPhone và Android.
+3. iPhone: mở link bằng Safari → nút Chia sẻ → Thêm vào Màn hình chính → Thêm.
+4. Android: mở link bằng Chrome → menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.
+5. Bản demo lưu dữ liệu trong trình duyệt trên từng thiết bị, không tự đồng bộ giữa các máy. Dùng Sao lưu JSON thường xuyên, nhất là trước khi xóa ứng dụng/dữ liệu trình duyệt. Việc gỡ ứng dụng hoặc dọn dữ liệu có thể làm mất lịch.
+6. Link HTTPS cần để cài như app. Mở trực tiếp file HTML trên iPhone sẽ không có đầy đủ tính năng cài đặt và làm việc offline của PWA.
+7. Đây không phải file IPA/APK và không đăng lên App Store/Google Play.
