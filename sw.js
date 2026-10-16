@@ -1,4 +1,4 @@
-const CACHE='lich-off-pwa-2026-10-16-v6';
+const CACHE='lich-off-pwa-2026-10-16-v7';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
