@@ -77,11 +77,11 @@ function shareFromSchedule(){
   const people=db.staff.filter(p=>departmentName(p.group)===group);
   if(!people.length)continue;
   lines.push('',group.toUpperCase());
-  people.forEach((p,i)=>{
+  let index=0;people.forEach(p=>{
    const rs=db.records.filter(r=>r.person===p.id&&r.month===month&&r.status==='OFF').sort((a,b)=>a.day-b.day);
    const relevantNotes=db.notes.filter(n=>(!n.month||n.month===month)&&norm(n.text).includes(norm(p.name)));
    if(!rs.length&&!relevantNotes.length)return;
-   lines.push((i+1)+'/ '+p.name+': '+(rs.length?compactOffDetails(rs):'Chưa ghi ngày')+
+   lines.push((++index)+'/ '+p.name+': '+(rs.length?compactOffDetails(rs):'Chưa ghi ngày')+
     (!rs.length&&relevantNotes.length?' — '+relevantNotes.map(n=>n.text).join('; '):''));
   });
  }
