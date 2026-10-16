@@ -44,8 +44,22 @@ body{background:linear-gradient(135deg,#fff0f6 0%,#fff8fb 56%,#fff0f4 100%);colo
 .filter-more>summary{background:#fff0f6;border-color:#f3cadd;color:#ac4773}
 .tag{background:#ffe3ee;color:#c63c66}.profile{background:#fff0f6}.avatar{background:#f9d9e6;color:#a34c72}.stat b,.compact-stats b{color:#b44b78}
 .toast{background:#923e65;color:white}.hint{background:#fff0f6;color:#95446a}
+
+/* White input field and unmistakable recording indicator */
+.entry-section .composer,.entry-section .composer textarea{background:#fff!important}
+.entry-section .composer{border:1px solid #eec5d7!important;box-shadow:0 2px 9px #d480a01c}
+.entry-section #entry{background:#fff!important;color:#603648;caret-color:#b63f74}
+.entry-buttons{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.voice-btn{display:inline-flex;gap:5px;align-items:center;justify-content:center;border:1px solid #ebb2ca;border-radius:12px;background:#fff2f7;color:#ae4674;min-height:34px;padding:6px 10px;font-size:12px;font-weight:800}
+.voice-btn.listening{background:#e93d6a;color:#fff;border-color:#cf2452;box-shadow:0 0 0 3px #f9b4ca,0 0 16px #f2648c;animation:voicePulse 1.1s ease-in-out infinite}
+.voice-btn.listening .voice-icon{filter:grayscale(1) brightness(0) invert(1)}
+.voice-status{font-size:11px;margin-top:5px;color:#a13c65;font-weight:600}
+.voice-status[hidden]{display:none}
+@keyframes voicePulse{0%,100%{transform:scale(1);box-shadow:0 0 0 2px #f9b4ca,0 0 8px #f2648c}50%{transform:scale(1.035);box-shadow:0 0 0 5px #f7a4bf,0 0 19px #e84773}}
+@media(prefers-reduced-motion:reduce){.voice-btn.listening{animation:none}}
+@media(max-width:375px){.entry-section .actions>.small{font-size:10px}.voice-btn{padding:6px 7px}}
 </style></head><body><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
-<div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="suggest()" placeholder="Tên OFF ngày/tháng ghi chú…&#10;VD: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tên · OFF · Ngày/tháng · Ghi chú</span><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div></section><section class="section results-section"><div class="quick-search"><input type="search" id="f-search" oninput="renderResults()" placeholder="🔎 Tìm tên, ngày hoặc ghi chú…"><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
+<div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="suggest()" placeholder="Tên OFF ngày/tháng ghi chú…&#10;VD: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tên · OFF · Ngày/tháng · Ghi chú</span><div class="entry-buttons"><button type="button" id="voice-btn" class="voice-btn" onclick="toggleVoiceInput()" aria-label="Nhập bằng giọng nói" aria-pressed="false"><span class="voice-icon">🎤</span><span id="voice-label">Nói</span></button><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div><div id="voice-status" role="status" aria-live="polite" class="voice-status" hidden></div></div></section><section class="section results-section"><div class="quick-search"><input type="search" id="f-search" oninput="renderResults()" placeholder="🔎 Tìm tên, ngày hoặc ghi chú…"><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
 <div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự cập nhật theo lịch OFF và ghi chú đã lưu. Sửa tay sẽ giữ bản nháp.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="shareDirty=true;try{localStorage.setItem('lich-off-share-draft-2026-10',this.value)}catch(e){}"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Tạo lại từ lịch</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
 <div id="roster" class="hidden"><section class="section"><div class="toolbar"><div><h2 style="margin:0">▦ Lịch tổng thể</h2><span class="sub">Bấm ô ngày để đổi OFF / đi làm và ghi chú</span></div><div class="chips"><select id="r-month" onchange="renderRoster()"></select><select id="r-group" onchange="renderRoster()"></select><button class="btn sm" onclick="exportXLSX()">⇩ Excel</button></div></div><div class="toolbar" style="margin-top:12px"><input style="max-width:250px" type="search" id="r-search" oninput="renderRoster()" placeholder="Tìm nhân viên..."><div class="chips"><button class="chip selected" id="mode-grid" onclick="changeMode('grid')">Bảng 1–31</button><button class="chip" id="mode-list" onclick="changeMode('list')">Theo ngày</button></div></div><div id="grid-view" class="calendar-wrap"></div><div id="list-view" class="hidden"><div class="toolbar" style="margin-top:12px"><button class="btn sm" onclick="shiftDay(-1)">‹ Ngày trước</button><strong id="current-day"></strong><button class="btn sm" onclick="shiftDay(1)">Ngày sau ›</button></div><div id="day-list"></div></div><div class="hint">Tên và ảnh được ghim ở cột bên trái. Kéo ngang để xem đủ 31 ngày. Chạm ảnh/tên để xem hồ sơ.</div></section></div><div class="footer">LỊCH OFF · Demo offline · 2 màn hình · Dữ liệu thử nghiệm</div></main>
 <div id="modalback" class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div>
@@ -185,6 +199,51 @@ function tipOnce(feature){
  const seen=seenGuides();seen[feature]=true;try{localStorage.setItem(GUIDE_KEY,JSON.stringify(seen))}catch(e){}
  window.activeGuide=null;
  openGuide(feature);
+}
+
+
+let voiceRecognizer=null,voiceActive=false,voiceBase='';
+function setVoiceState(isOn,message){
+ voiceActive=isOn;
+ const btn=$('voice-btn'),label=$('voice-label'),status=$('voice-status');
+ if(btn){btn.classList.toggle('listening',isOn);btn.setAttribute('aria-pressed',String(isOn))}
+ if(label)label.textContent=isOn?'Dừng':'Nói';
+ if(status){status.hidden=!message;status.textContent=message||''}
+}
+function toggleVoiceInput(){
+ if(voiceActive&&voiceRecognizer){voiceRecognizer.stop();return}
+ const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Speech){
+  $('entry').focus();
+  setVoiceState(false,'Máy chưa hỗ trợ ghi âm trong ứng dụng. Hãy nhấn 🎙 trên bàn phím để đọc nội dung.');
+  return;
+ }
+ voiceBase=$('entry').value.trim();
+ let rec;
+ try{rec=new Speech()}catch(e){setVoiceState(false,'Không khởi tạo được mic. Hãy dùng mic trên bàn phím.');return}
+ voiceRecognizer=rec;
+ rec.lang='vi-VN';rec.continuous=false;rec.interimResults=true;rec.maxAlternatives=1;
+ rec.onstart=()=>setVoiceState(true,'🔴 ĐANG NGHE — chạm Dừng để kết thúc');
+ rec.onresult=(event)=>{
+  let finalized='',interim='';
+  for(let i=0;i<event.results.length;i++){
+   const result=event.results[i];if(result.isFinal)finalized+=result[0].transcript+' ';else interim+=result[0].transcript;
+  }
+  const spoken=(finalized+interim).trim();
+  $('entry').value=[voiceBase,spoken].filter(Boolean).join(' ');
+  suggest();
+ };
+ rec.onerror=(event)=>{
+  const msg=event.error==='not-allowed'?'Chưa được cấp quyền microphone. Hãy cho phép micro trong cài đặt trình duyệt.':event.error==='no-speech'?'Không nghe thấy giọng nói. Hãy thử lại.':'Không nhận được giọng nói, hãy thử lại.';
+  setVoiceState(false,msg);
+ };
+ rec.onend=()=>{
+  const status=$('voice-status');
+  const wasError=status&&!status.hidden&&!status.textContent.includes('ĐANG NGHE');
+  setVoiceState(false,wasError?status.textContent:'✓ Đã ngừng nghe. Kiểm tra lại nội dung rồi bấm LƯU.');
+  voiceRecognizer=null;suggest();
+ };
+ try{rec.start()}catch(e){setVoiceState(false,'Không mở được microphone. Hãy dùng mic của bàn phím.');voiceRecognizer=null}
 }
 
 function parseInput(text){text=text.trim();let n=text.match(/^(?:ghi chú|ghi chu|note|lưu ý|luu y)\s*:\s*(.+)$/i);if(n){let dt=n[1].match(/(?:ngày\s*)?(\d{1,2})\s*\/\s*(\d{1,2})/);return{type:'note',text:n[1].trim(),day:dt?Number(dt[1]):null,month:dt?Number(dt[2]):null}}let m=text.match(/^(.+?)\s+(OFF|ĐI LÀM|DI LAM|ĐI LAM|DI LÀM)\s+(.+)$/i);if(!m)return{error:'Nhập theo mẫu: TÊN OFF 5, 12/10 ghi chú, hoặc Ghi chú: ...'};let p=db.staff.find(x=>norm(x.name)===norm(m[1].trim()));if(!p)return{error:'Chưa tìm thấy nhân viên. Hãy chọn tên từ gợi ý.'};const dm=m[3].match(/^(\d{1,2}(?:\s*[,;]\s*\d{1,2})*)\s*\/\s*(\d{1,2})(?:\s+(.*))?$/);if(!dm)return{error:'Ngày không hợp lệ. Ví dụ: Hồng OFF 5, 12/10 về quê'};const month=Number(dm[2]),days=[...new Set(dm[1].split(/[,;]/).map(v=>Number(v.trim())))];if(month<1||month>12||days.some(d=>d<1||d>dateMax(month)))return{error:'Ngày hoặc tháng không tồn tại trong năm '+year};return{type:'schedule',person:p.id,days,month,status:norm(m[2])==='off'?'OFF':'ĐI LÀM',note:(dm[3]||'').trim()}}
