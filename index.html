@@ -102,12 +102,30 @@ function shareFromSchedule(){
 }
 function showShareText(){const el=$('share-text');const saved=localStorage.getItem('lich-off-share-draft-2026-10');if(!el.value&&saved){el.value=saved;shareDirty=true}else if(!shareDirty||!el.value)el.value=shareFromSchedule(); const mark=document.getElementById('share-status');if(mark)mark.textContent=shareDirty?'Bản nháp đã sửa tay • Bấm Tạo lại từ lịch để đồng bộ':'Tự cập nhật theo lịch OFF và ghi chú đã lưu'}
 function regenerateShare(){if(shareDirty&&$('share-text').value&&!confirm('Tạo lại văn bản sẽ thay nội dung bạn vừa sửa. Tiếp tục?'))return;shareDirty=false;localStorage.removeItem('lich-off-share-draft-2026-10');$('share-text').value=shareFromSchedule();showShareText();}
-async function copyAndOpenZalo(){
-  const text=$('share-text').value.trim();if(!text){flash('Chưa có văn bản');return;}
-  let ok=false;try{await navigator.clipboard.writeText(text);ok=true}catch(e){const el=$('share-text');el.focus();el.select();try{ok=document.execCommand('copy')}catch(_){}}
-  if(!ok){flash('Không tự sao chép được. Chọn văn bản và Sao chép thủ công.');return;}
-  flash('Đã sao chép! Mở Zalo, chọn nhóm và Dán vào khung chat.');
-  window.location.href='https://zalo.me/';
+function openZaloApp(){
+  // Use the Zalo app scheme; deliberately never fall back to zalo.me homepage.
+  window.location.href='zalo://launch';
+}
+function copyAndOpenZalo(){
+  const msg=$('share-text').value.trim();
+  if(!msg){flash('Chưa có văn bản để gửi');return}
+  const original=$('share-text');
+  // Synchronous copy preserves the iOS direct-tap gesture for the deep link.
+  original.focus();original.select();original.setSelectionRange(0,original.value.length);
+  let copied=false;
+  try{copied=document.execCommand('copy')}catch(e){}
+  if(copied){
+    flash('Đã sao chép. Chọn nhóm trong Zalo rồi Dán và Gửi.');
+    openZaloApp();
+    return;
+  }
+  // Clipboard API can work where execCommand does not, but navigating afterward
+  // may lose the browser's user activation. Offer a separate direct-open tap.
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(()=>{
+      modal('<h3>Đã sao chép lịch OFF</h3><p>Chạm nút dưới để mở ứng dụng Zalo, chọn nhóm rồi <b>Dán</b> và <b>Gửi</b>.</p><button class="btn primary" style="width:100%" onclick="openZaloApp()">Mở ứng dụng Zalo ↗</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeModal()">Đóng</button>');
+    }).catch(()=>flash('Chưa sao chép được. Hãy chọn văn bản và Sao chép thủ công.'));
+  }else flash('Chưa sao chép được. Hãy chọn văn bản và Sao chép thủ công.');
 }
 
 // Helpful first-use tips are per-feature and dismissible. Stored locally on this device.
