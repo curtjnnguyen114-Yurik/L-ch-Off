@@ -426,7 +426,7 @@ function renderRoster(){
     const cells=days.map(d=>{
      const r=rec(p.id,d,month);return '<td class="day '+(r?.status==='OFF'?'off':'work')+'" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+d+','+month+')" title="'+esc(r?.note||'Chạm để cập nhật')+'">'+(r?.status==='OFF'?(r.note?'📝':'X'):r?.status==='ĐI LÀM'?'·':'')+'</td>';
     }).join('');
-    return '<tr><td class="namecell"><div class="nameinside" onclick="openStaff('+JSON.stringify(p.id).replace(/"/g,'&quot;')+')"><span class="roster-name"><b>'+(i+1)+'. '+esc(p.name)+'</b></span></div></td><td class="note-cell" title="'+esc(noteText)+'"><div class="roster-note">'+esc(noteText)+'</div></td>'+cells+'<td class="total-cell">'+offRows.length+'</td></tr>';
+    return '<tr><td class="namecell"><div class="nameinside" onclick="openStaff('+JSON.stringify(p.id).replace(/"/g,'&quot;')+')"><span class="roster-name"><b>'+(i+1)+'. '+esc(p.name)+'</b></span></div></td>'+cells+'<td class="total-cell">'+offRows.length+'</td></tr>';
    }).join('');
    return title+rows;
   }).join('');
