@@ -416,9 +416,9 @@ function renderRoster(){
     const pending=db.notes.filter(n=>(!n.month||n.month===month)&&(n.person===p.id||norm(n.text).startsWith(norm(p.name)+' off')));
     const noteText=[...offRows.filter(r=>r.note).map(r=>r.day+': '+r.note),...pending.map(n=>n.text)].join(' • ')||'—';
     const cells=days.map(d=>{
-     const r=rec(p.id,d,month);return '<td class="day '+(r?.status==='OFF'?'off':'work')+'" onclick="openCell('+JSON.stringify(p.id)+','+d+','+month+')" title="'+esc(r?.note||'Chạm để cập nhật')+'">'+(r?.status==='OFF'?(r.note?'📝':'X'):r?.status==='ĐI LÀM'?'·':'')+'</td>';
+     const r=rec(p.id,d,month);return '<td class="day '+(r?.status==='OFF'?'off':'work')+'" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+d+','+month+')" title="'+esc(r?.note||'Chạm để cập nhật')+'">'+(r?.status==='OFF'?(r.note?'📝':'X'):r?.status==='ĐI LÀM'?'·':'')+'</td>';
     }).join('');
-    return '<tr><td class="namecell"><div class="nameinside" onclick="openStaff('+JSON.stringify(p.id)+')"><span class="roster-name"><b>'+(i+1)+'. '+esc(p.name)+'</b></span></div></td><td class="note-cell" title="'+esc(noteText)+'"><div class="roster-note">'+esc(noteText)+'</div></td>'+cells+'<td class="total-cell">'+offRows.length+'</td></tr>';
+    return '<tr><td class="namecell"><div class="nameinside" onclick="openStaff('+JSON.stringify(p.id).replace(/"/g,'&quot;')+')"><span class="roster-name"><b>'+(i+1)+'. '+esc(p.name)+'</b></span></div></td><td class="note-cell" title="'+esc(noteText)+'"><div class="roster-note">'+esc(noteText)+'</div></td>'+cells+'<td class="total-cell">'+offRows.length+'</td></tr>';
    }).join('');
    return title+rows;
   }).join('');
@@ -427,7 +427,7 @@ function renderRoster(){
   rosterDay=Math.min(rosterDay,max);$('current-day').textContent=rosterDay+'/'+month+'/'+year;
   $('day-list').innerHTML=groups.map(({group,people})=>'<div class="roster-list-group">'+esc(group)+' <small>('+people.length+')</small></div>'+people.map((p,i)=>{
    const r=rec(p.id,rosterDay,month);
-   return '<div class="listrow">'+avatar(p)+'<div style="flex:1;min-width:0"><b>'+(i+1)+'. '+esc(p.name)+'</b><div class="sub">'+esc(r?.note||'')+'</div></div><span class="'+(r?.status==='OFF'?'tag':'small muted')+'">'+esc(r?.status||'—')+'</span><button class="btn sm" onclick="openCell('+JSON.stringify(p.id)+','+rosterDay+','+month+')">Sửa</button></div>';
+   return '<div class="listrow">'+avatar(p)+'<div style="flex:1;min-width:0"><b>'+(i+1)+'. '+esc(p.name)+'</b><div class="sub">'+esc(r?.note||'')+'</div></div><span class="'+(r?.status==='OFF'?'tag':'small muted')+'">'+esc(r?.status||'—')+'</span><button class="btn sm" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+rosterDay+','+month+')">Sửa</button></div>';
   }).join('')).join('')||'<div class="empty">Không tìm thấy nhân viên</div>';
  }
 }
