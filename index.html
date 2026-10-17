@@ -89,14 +89,21 @@ body{background:linear-gradient(135deg,#fff0f6 0%,#fff8fb 56%,#fff0f4 100%);colo
 .cell-readonly .cell-notes p{margin:0 0 9px}
 .cell-readonly .cell-notes p:last-child{margin-bottom:0}
 @media(max-width:390px){#roster .cal .namecell,#roster .cal-compact .namecell{min-width:112px!important;max-width:112px!important;width:112px!important}}
-</style></head><body><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
+
+/* Pull-to-refresh: visible only while gesture is active, not an obstructing header. */
+.pull-refresh{position:fixed;z-index:40;top:calc(env(safe-area-inset-top,0px) + 8px);left:50%;transform:translate(-50%,-130px);display:flex;align-items:center;gap:9px;border:1px solid #ebacc6;background:#fff7fa;color:#a53f6d;padding:9px 16px;border-radius:30px;box-shadow:0 6px 20px #a9547e30;font-size:12px;font-weight:750;pointer-events:none;opacity:0;transition:transform .18s ease,opacity .18s ease;white-space:nowrap}
+.pull-refresh.visible{opacity:1;transform:translate(-50%,0)}
+.pull-refresh.refreshing #pull-refresh-icon{animation:pullSpin 1s linear infinite}
+@keyframes pullSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.pull-refresh.refreshing #pull-refresh-icon{animation:none}}
+</style></head><body><div id="pull-refresh" class="pull-refresh" aria-live="polite" aria-hidden="true"><span id="pull-refresh-icon">↓</span><span id="pull-refresh-text">Vuốt xuống để cập nhật</span></div><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
 <div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="handleUnifiedEntry()" placeholder="🔎 Tìm tên / ghi chú...&#10;Hoặc: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tìm nhanh · TÊN OFF [ngày/tháng] [ghi chú]</span><div class="entry-buttons"><button type="button" id="voice-btn" class="voice-btn" onclick="toggleVoiceInput()" aria-label="Nhập bằng giọng nói" aria-pressed="false"><span class="voice-icon">🎤</span><span id="voice-label">Nói</span></button><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div><div id="voice-status" role="status" aria-live="polite" class="voice-status" hidden></div></div></section><section class="section results-section"><div class="quick-search"><span class="unified-search-help">🔎 Tìm trực tiếp tại ô nhập phía trên</span><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
 <div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự bổ sung OFF mới. Nội dung bạn sửa tay được giữ nguyên.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="saveManualShare()"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Bổ sung OFF mới</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
 <div id="roster" class="hidden"><section class="section"><div class="toolbar"><div><h2 style="margin:0">▦ Lịch tổng thể</h2><span class="sub">Bấm ô ngày để đổi OFF / đi làm và ghi chú</span></div><div class="chips"><select id="r-month" onchange="renderRoster()"></select><select id="r-group" onchange="renderRoster()"></select><button class="btn sm" onclick="exportXLSX()">⇩ Excel</button></div></div><div class="toolbar" style="margin-top:12px"><input style="max-width:250px" type="search" id="r-search" oninput="renderRoster()" placeholder="Tìm nhân viên..."><div class="chips"><button class="chip" id="mode-grid" onclick="changeMode('grid')">Toàn tháng</button><button class="chip selected" id="mode-off" onclick="changeMode('off')">Chỉ ngày OFF</button><button class="chip" id="mode-list" onclick="changeMode('list')">Theo ngày</button></div></div><div id="grid-view" class="calendar-wrap"></div><div id="list-view" class="hidden"><div class="toolbar" style="margin-top:12px"><button class="btn sm" onclick="shiftDay(-1)">‹ Ngày trước</button><strong id="current-day"></strong><button class="btn sm" onclick="shiftDay(1)">Ngày sau ›</button></div><div id="day-list"></div></div><div class="hint">Tên và bộ phận được ghim bên trái. Chạm vào dấu OFF để xem đầy đủ ghi chú; nhấn Sửa khi cần cập nhật.</div></section></div><div class="footer">LỊCH OFF · Demo offline · 2 màn hình · Dữ liệu thử nghiệm</div></main>
 <div id="modalback" class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div>
 <script>
 const KEY='lich-off-demo-v4';const year=2026;const defaults={staff:[{id:'hong',name:'Hồng',group:'PHỤC VỤ',photo:''},{id:'phuc',name:'Phúc',group:'PHỤC VỤ',photo:''},{id:'trang',name:'Trang',group:'TỔ NAM',photo:''},{id:'hai',name:'Hải',group:'KHO QUẦY',photo:''},{id:'quang',name:'Quang',group:'TỔ NAM',photo:''}],records:[{person:'hong',day:5,month:10,status:'OFF',note:'Nghỉ việc riêng'},{person:'hong',day:20,month:10,status:'OFF',note:'Về quê'},{person:'phuc',day:12,month:10,status:'OFF',note:'Nghỉ phép'},{person:'trang',day:16,month:10,status:'OFF',note:'Đã báo quản lý'},{person:'hai',day:18,month:10,status:'OFF',note:'Việc cá nhân'}],notes:[{month:10,day:18,text:'Cần bổ sung nhân viên ca tối'}]};let db;try{db=JSON.parse(localStorage.getItem(KEY))||structuredClone(defaults)}catch{db=structuredClone(defaults)}let rosterMode='off',rosterDay=16,editCell=null;
-const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');const dateMax=m=>new Date(year,m,0).getDate();const staffBy=id=>db.staff.find(p=>p.id===id);const rec=(p,d,m)=>db.records.find(r=>r.person===p&&r.day===d&&r.month===m);function persist(){try{normalizeDepartments();localStorage.setItem(KEY,JSON.stringify(db));if(typeof syncShareAdditions==='function')syncShareAdditions();return true}catch(e){alert('Bộ nhớ thiết bị đầy. Hãy xuất sao lưu, hoặc dùng ảnh có kích thước nhỏ hơn.');return false}}function flash(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3000)}function avatar(p,big=false){if(!p)return '';return p.photo?`<img class="avatar ${big?'big':''}" src="${p.photo}" alt="Ảnh ${esc(p.name)}">`:`<div class="avatar ${big?'big':''}">${esc(p.name.slice(0,1).toUpperCase())}</div>`}function page(t){$('home').classList.toggle('hidden',t!=='home');$('roster').classList.toggle('hidden',t!=='roster');$('text').classList.toggle('hidden',t!=='text');$('tab-home').classList.toggle('active',t==='home');$('tab-roster').classList.toggle('active',t==='roster');$('tab-text').classList.toggle('active',t==='text');if(t==='roster'){renderRoster();tipOnce('roster')}if(t==='text'){showShareText();tipOnce('text')}}function sample(s){$('entry').value=s;suggest();$('entry').focus()}function suggest(){const s=$('entry').value.trim(),box=$('suggestions');box.innerHTML='';if(!s){box.classList.remove('show');return}const first=norm(s.split(/\s+/)[0]);let matches=db.staff.filter(p=>norm(p.name).startsWith(first)).slice(0,5);if(/\b(off|nghi|lam)\b/.test(norm(s))){box.classList.remove('show');return}if(!matches.length){box.classList.remove('show');return}box.innerHTML='<div class="sub" style="padding:3px 7px">Gợi ý tên nhân viên</div>'+matches.map(p=>`<button class="suggest" onclick="pickName('${p.id}')">${avatar(p)}<span><b>${esc(p.name)}</b><br><span class="sub">${esc(p.group)}</span></span><span style="margin-left:auto;color:#80b4ab">↵</span></button>`).join('');box.classList.add('show')}function pickName(id){let p=staffBy(id);$('entry').value=p.name+' OFF ';$('suggestions').classList.remove('show');renderResults();$('entry').focus()}
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');const dateMax=m=>new Date(year,m,0).getDate();const staffBy=id=>db.staff.find(p=>p.id===id);const rec=(p,d,m)=>db.records.find(r=>r.person===p&&r.day===d&&r.month===m);function persist(){try{normalizeDepartments();localStorage.setItem(KEY,JSON.stringify(db));if(typeof syncShareAdditions==='function')syncShareAdditions();return true}catch(e){alert('Bộ nhớ thiết bị đầy. Hãy xuất sao lưu, hoặc dùng ảnh có kích thước nhỏ hơn.');return false}}function flash(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3000)}function avatar(p,big=false){if(!p)return '';return p.photo?`<img class="avatar ${big?'big':''}" src="${p.photo}" alt="Ảnh ${esc(p.name)}">`:`<div class="avatar ${big?'big':''}">${esc(p.name.slice(0,1).toUpperCase())}</div>`}function page(t){$('home').classList.toggle('hidden',t!=='home');$('roster').classList.toggle('hidden',t!=='roster');$('text').classList.toggle('hidden',t!=='text');$('tab-home').classList.toggle('active',t==='home');$('tab-roster').classList.toggle('active',t==='roster');$('tab-text').classList.toggle('active',t==='text');if(t==='roster'){renderRoster();tipOnce('roster')}if(t==='text'){showShareText();tipOnce('text')}}function sample(s){$('entry').value=s;handleUnifiedEntry();$('entry').focus()}function suggest(){const s=$('entry').value.trim(),box=$('suggestions');box.innerHTML='';if(!s){box.classList.remove('show');return}const first=norm(s.split(/\s+/)[0]);let matches=db.staff.filter(p=>norm(p.name).startsWith(first)).slice(0,5);if(/\b(off|nghi|lam)\b/.test(norm(s))){box.classList.remove('show');return}if(!matches.length){box.classList.remove('show');return}box.innerHTML='<div class="sub" style="padding:3px 7px">Gợi ý tên nhân viên</div>'+matches.map(p=>`<button class="suggest" onclick="pickName('${p.id}')">${avatar(p)}<span><b>${esc(p.name)}</b><br><span class="sub">${esc(p.group)}</span></span><span style="margin-left:auto;color:#80b4ab">↵</span></button>`).join('');box.classList.add('show')}function pickName(id){let p=staffBy(id);$('entry').value=p.name+' OFF ';saveEntryDraft();$('suggestions').classList.remove('show');renderResults();$('entry').focus()}
 
 // Danh sách trích từ 2 ảnh tháng 10/2026. Các dấu OFF chưa đủ rõ để nhập chính xác.
 const IMAGE_OCT2026_GROUPS={"KHO QUẦY":["KHOA TQL","HÂN QL","NGÂN QL","LIÊN QL","MỸ QL","LINH QL","OANH QL","PHƯƠNG QL","H.HẠNH QL","DANH NGUYỄN QL","QUỐC QL"],"PHỤC VỤ NỮ":["DUYÊN DUYÊN","HỒNG","QUẾ ANH","TIÊN TIÊN","KIỀU","CHU CHU","MỸ DUYÊN","YẾN NHI","THẢO NGUYÊN","TIẾN","HUỲNH NHƯ","TRÚC ANH","TIẾN KIM","BÌNH ĐĂNG","NGỌC NGỌC","KHẢ AN","PHÚC","KỲ","TRÀ"],"CA KHÔNG LƯƠNG":["TUYỀN","HOA","NGÂN MỚI","TRÂM ANH","NHƯ Ý","NGÂN","NGỌC HIỀN","NGỌC TIÊN","ANH DƯƠNG","XUÂN LÊ","KIM NGÂN","SAN SAN","BẢO TRÂM","NGỌC SƯƠNG","BẢO ANH","NGUYỆT MOON","NHƯ NHIÊN","KIỀU VY","DOLLY","MẪN","TRƯƠNG NHI","HỒNG THẢO","HEONHEON","DƯƠNG DƯƠNG"],"TỔ NAM":["QUANG","DUY","VINH","THIỆN","TÂM","PHONG","TRỌNG","NHẬT DUY","THƯƠNG","NAM"]};
@@ -359,13 +366,97 @@ function unifiedCommand(raw){
  const person=db.staff.find(p=>norm(p.name)===norm(m[1].trim()));
  return person?{person,rest:(m[2]||'').trim()}:null;
 }
-function handleUnifiedEntry(){suggest();renderResults();}
+function handleUnifiedEntry(){saveEntryDraft();suggest();renderResults();}
 function unifiedSearch(){
  const raw=$('entry').value.trim();
  if(!raw)return '';
  const command=unifiedCommand(raw);if(command)return norm(command.person.name);
  return norm(raw.replace(/^(?:tìm|tim|search)\s*:?\s*/i,''));
 }
+
+const ENTRY_DRAFT_KEY='lich-off-entry-draft-session-v1';
+function saveEntryDraft(){
+ try{sessionStorage.setItem(ENTRY_DRAFT_KEY,$('entry')?.value||'')}catch(e){}
+}
+function clearEntryDraft(){try{sessionStorage.removeItem(ENTRY_DRAFT_KEY)}catch(e){}}
+function restoreEntryDraft(){
+ try{const draft=sessionStorage.getItem(ENTRY_DRAFT_KEY);if(draft!==null&&$('entry')){$('entry').value=draft;handleUnifiedEntry()}}catch(e){}
+}
+let pullY=0,pullX=0,pullDistance=0,pullTracking=false,pullBusy=false;
+function setPullIndicator(distance,text){
+ const box=$('pull-refresh');if(!box)return;
+ box.classList.toggle('visible',distance>12||pullBusy);
+ $('pull-refresh-icon').textContent=pullBusy?'⟳':distance>=85?'↻':'↓';
+ $('pull-refresh-text').textContent=text||(distance>=85?'Thả tay để cập nhật':'Vuốt xuống để cập nhật');
+}
+function resetPullIndicator(){
+ if(pullBusy)return;
+ pullTracking=false;pullDistance=0;setPullIndicator(0);
+}
+function pullEligible(target){
+ if(window.scrollY>2||document.documentElement.scrollTop>2)return false;
+ if($('modalback')?.classList.contains('open'))return false;
+ if(target.closest('input,textarea,select,button,[contenteditable],.calendar-wrap,.share-text,.modal,.utility-panel,.tabs'))return false;
+ // Inner scrollers must remain scrollable on their own.
+ let node=target;
+ while(node&&node!==document.body){
+  if(node.scrollHeight>node.clientHeight+6&&/auto|scroll/.test(getComputedStyle(node).overflowY))return false;
+  node=node.parentElement;
+ }
+ return true;
+}
+async function refreshNewVersion(){
+ if(pullBusy)return;
+ pullBusy=true;pullTracking=false;
+ saveEntryDraft();
+ // OFF records and edited Zalo text already persist to localStorage; never reset them.
+ setPullIndicator(95,'Đang kiểm tra phiên bản mới...');
+ $('pull-refresh')?.classList.add('refreshing');
+ if(!navigator.onLine){
+  $('pull-refresh')?.classList.remove('refreshing');pullBusy=false;
+  setPullIndicator(65,'Đang ngoại tuyến — dữ liệu vẫn được giữ');
+  setTimeout(()=>resetPullIndicator(),1800);return;
+ }
+ try{
+  if('serviceWorker' in navigator){
+   const registration=await navigator.serviceWorker.getRegistration();
+   if(registration)await registration.update();
+  }
+  // A no-store request avoids relying on the iOS PWA's old HTTP cache.
+  const response=await fetch('./index.html?check='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('Không tải được phiên bản mới');
+  setPullIndicator(95,'Đang mở phiên bản mới...');
+  window.location.replace(window.location.pathname+'?updated='+Date.now());
+ }catch(e){
+  $('pull-refresh')?.classList.remove('refreshing');pullBusy=false;
+  setPullIndicator(65,'Chưa thể cập nhật — thử lại khi có mạng');
+  setTimeout(()=>resetPullIndicator(),2000);
+ }
+}
+function initPullToRefresh(){
+ document.addEventListener('touchstart',event=>{
+  if(pullBusy||event.touches.length!==1)return;
+  const target=event.target;
+  if(!target||!target.closest||!pullEligible(target))return;
+  pullY=event.touches[0].clientY;pullX=event.touches[0].clientX;
+  pullDistance=0;pullTracking=true;
+ },{passive:true});
+ document.addEventListener('touchmove',event=>{
+  if(!pullTracking||pullBusy||event.touches.length!==1)return;
+  const dy=event.touches[0].clientY-pullY,dx=event.touches[0].clientX-pullX;
+  if(dy<0||Math.abs(dx)>Math.abs(dy)*0.8){resetPullIndicator();return}
+  pullDistance=Math.min(120,Math.max(0,dy*0.7));
+  if(pullDistance>12){event.preventDefault();setPullIndicator(pullDistance)}
+ },{passive:false});
+ document.addEventListener('touchend',()=>{
+  if(!pullTracking||pullBusy)return;
+  const shouldRefresh=pullDistance>=85;
+  resetPullIndicator();
+  if(shouldRefresh)refreshNewVersion();
+ },{passive:true});
+ document.addEventListener('touchcancel',resetPullIndicator,{passive:true});
+}
+
 function parseInput(text){
  const raw=text.trim(),c=unifiedCommand(raw);
  if(!c)return{error:'Chỉ lưu khi có TÊN NHÂN VIÊN + OFF. Ví dụ: Hồng OFF hoặc Hồng OFF 20/10.'};
@@ -387,7 +478,7 @@ function saveInput(){
   const text=p.name+' OFF'+(data.note?' — '+data.note:'')+' (chưa có ngày)';
   const old=db.notes.find(n=>n.pendingOff&&n.person===p.id&&n.month===month);
   if(old){old.text=text;old.details=data.note}else db.notes.push({person:p.id,pendingOff:true,month,day:null,text,details:data.note});
-  persist();$('entry').value='';suggest();renderAll();
+  persist();$('entry').value='';clearEntryDraft();suggest();renderAll();
   flash('Đã lưu OFF chờ bổ sung ngày cho '+p.name+'. Chưa đánh dấu trên lịch.');
   return;
  }
@@ -395,7 +486,7 @@ function saveInput(){
  if(prior.length&&!confirm('Đã có dữ liệu ngày '+prior.join(', ')+'. Thay trạng thái và ghi chú cũ?'))return;
  for(const day of data.days){db.records=db.records.filter(r=>!(r.person===data.person&&r.day===day&&r.month===data.month));db.records.push({person:data.person,day,month:data.month,status:'OFF',note:data.note})}
  db.notes=db.notes.filter(n=>!(n.pendingOff&&n.person===data.person&&n.month===data.month));
- persist();$('entry').value='';suggest();renderAll();
+ persist();$('entry').value='';clearEntryDraft();suggest();renderAll();
  flash('Đã lưu '+data.days.length+' ngày OFF cho '+staffBy(data.person).name);
 }
 function fillSelectors(){const pick=(id,options)=>{let v=$(id).value;$(id).innerHTML=options.map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join('');if(options.some(o=>o[0]===v))$(id).value=v};pick('f-name',[['ALL','Tất cả nhân viên'],...db.staff.map(s=>[s.id,s.name+' · '+s.group])]);pick('f-month',Array.from({length:12},(_,i)=>[String(i+1),'Tháng '+(i+1)]));pick('f-day',[['ALL','Tất cả ngày'],...Array.from({length:31},(_,i)=>[String(i+1),'Ngày '+(i+1)])]);pick('r-month',Array.from({length:12},(_,i)=>[String(i+1),'Tháng '+(i+1)]));pick('r-group',[['ALL','Tất cả bộ phận'],...[...new Set(db.staff.map(s=>s.group))].map(g=>[g,g])])}function resetFilters(){$('f-name').value='ALL';$('f-month').value='10';$('f-day').value='ALL';$('f-status').value='ALL';$('entry').value='';suggest();renderResults()}
@@ -543,5 +634,5 @@ function exportXLSX(){
   download(blob,`Lich_OFF_Thang_${String(month).padStart(2,'0')}_${year}.xlsx`);
   flash('Đã xuất Excel gồm lịch tháng, tất cả chi tiết, ghi chú và tổng hợp 12 tháng');tipOnce('export');
 }
-if(!localStorage.getItem(KEY))applyOctober2026(true);fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();initShareSync();setTimeout(()=>tipOnce('input'),700);
+if(!localStorage.getItem(KEY))applyOctober2026(true);fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();initShareSync();restoreEntryDraft();initPullToRefresh();setTimeout(()=>tipOnce('input'),700);
 </script><script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}</script></body></html>
