@@ -166,24 +166,17 @@ function applyOctober2026(initial=false){
 function importZaloOctober(){applyOctober2026(false)}
 
 function compactOffDetails(records){
- // Keep detail notes on their own dates; only compress plain consecutive OFF dates.
  const days=[...new Map(records.filter(r=>r.status==='OFF').map(r=>[Number(r.day),r])).values()].sort((a,b)=>a.day-b.day);
  const pieces=[];
  for(let i=0;i<days.length;){
-  const r=days[i];
-  if(r.note&&r.note.trim()){
-   pieces.push(r.day+' ('+r.note.trim()+')');i++;continue;
-  }
+  const note=String(days[i].note||'').trim().replace(/\s+/g,' ');
   let j=i+1;
-  while(j<days.length&&!String(days[j].note||'').trim()&&days[j].day===days[j-1].day+1)j++;
-  const len=j-i;
-  if(len>=3)pieces.push(days[i].day+'–'+days[j-1].day);
-  else for(let k=i;k<j;k++)pieces.push(String(days[k].day));
+  while(j<days.length&&days[j].day===days[j-1].day+1&&String(days[j].note||'').trim().replace(/\s+/g,' ')===note)j++;
+  pieces.push(days[i].day+(j>i+1?'-'+days[j-1].day:'')+(note?' ('+note+')':''));
   i=j;
  }
  return pieces.join(', ');
 }
-
 function shareFromSchedule(){
  const month=10,groups=DEPARTMENTS;let lines=['🌸 LỊCH OFF NV LẠC CẢNH THÁNG 10.2026 🌸'];
  for(const group of groups){
