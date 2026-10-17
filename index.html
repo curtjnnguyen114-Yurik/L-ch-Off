@@ -101,7 +101,7 @@ body{background:linear-gradient(135deg,#fff0f6 0%,#fff8fb 56%,#fff0f4 100%);colo
 @media(max-width:390px){.refresh-top-btn{width:30px;height:30px;min-width:30px}}
 </style></head><body><div id="pull-refresh" class="pull-refresh" aria-live="polite" aria-hidden="true"><span id="pull-refresh-icon">↓</span><span id="pull-refresh-text">Vuốt xuống để cập nhật</span></div><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" class="refresh-top-btn" onclick="refreshNewVersion()" aria-label="Tải bản mới" title="Tải bản mới">⟳</button><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
 <div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="handleUnifiedEntry()" placeholder="🔎 Tìm tên / ghi chú...&#10;Hoặc: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tìm nhanh · TÊN OFF [ngày/tháng] [ghi chú]</span><div class="entry-buttons"><button type="button" id="voice-btn" class="voice-btn" onclick="toggleVoiceInput()" aria-label="Nhập bằng giọng nói" aria-pressed="false"><span class="voice-icon">🎤</span><span id="voice-label">Nói</span></button><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div><div id="voice-status" role="status" aria-live="polite" class="voice-status" hidden></div></div></section><section class="section results-section"><div class="quick-search"><span class="unified-search-help">🔎 Tìm trực tiếp tại ô nhập phía trên</span><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
-<div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự bổ sung OFF mới. Nội dung bạn sửa tay được giữ nguyên.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="saveManualShare()"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Đồng bộ lịch OFF</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
+<div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-device-count" style="margin:4px 0;font-weight:700"></p><p class="sub" id="share-status" style="margin:5px 0">Tạo nội dung Zalo từ OFF trên thiết bị này; dòng sửa tay giữ nguyên, OFF thiếu được bổ sung.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="saveManualShare()"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Đồng bộ lịch OFF</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
 <div id="roster" class="hidden"><section class="section"><div class="toolbar"><div><h2 style="margin:0">▦ Lịch tổng thể</h2><span class="sub">Bấm ô ngày để đổi OFF / đi làm và ghi chú</span></div><div class="chips"><select id="r-month" onchange="renderRoster()"></select><select id="r-group" onchange="renderRoster()"></select><button class="btn sm" onclick="exportXLSX()">⇩ Excel</button></div></div><div class="toolbar" style="margin-top:12px"><input style="max-width:250px" type="search" id="r-search" oninput="renderRoster()" placeholder="Tìm nhân viên..."><div class="chips"><button class="chip" id="mode-grid" onclick="changeMode('grid')">Toàn tháng</button><button class="chip selected" id="mode-off" onclick="changeMode('off')">Chỉ ngày OFF</button><button class="chip" id="mode-list" onclick="changeMode('list')">Theo ngày</button></div></div><div id="grid-view" class="calendar-wrap"></div><div id="list-view" class="hidden"><div class="toolbar" style="margin-top:12px"><button class="btn sm" onclick="shiftDay(-1)">‹ Ngày trước</button><strong id="current-day"></strong><button class="btn sm" onclick="shiftDay(1)">Ngày sau ›</button></div><div id="day-list"></div></div><div class="hint">Tên và bộ phận được ghim bên trái. Chạm vào dấu OFF để xem đầy đủ ghi chú; nhấn Sửa khi cần cập nhật.</div></section></div><div class="footer">LỊCH OFF · Demo offline · 2 màn hình · Dữ liệu thử nghiệm</div></main>
 <div id="modalback" class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div>
 <script>
@@ -164,6 +164,26 @@ function applyOctober2026(initial=false){
  if(!initial){renderAll();regenerateShare();flash('Đã cập nhật '+offCount+' ô OFF tháng 10, '+created+' nhân viên mới.');}
 }
 function importZaloOctober(){applyOctober2026(false)}
+
+function compactOffDetails(records){
+ // Keep detail notes on their own dates; only compress plain consecutive OFF dates.
+ const days=[...new Map(records.filter(r=>r.status==='OFF').map(r=>[Number(r.day),r])).values()].sort((a,b)=>a.day-b.day);
+ const pieces=[];
+ for(let i=0;i<days.length;){
+  const r=days[i];
+  if(r.note&&r.note.trim()){
+   pieces.push(r.day+' ('+r.note.trim()+')');i++;continue;
+  }
+  let j=i+1;
+  while(j<days.length&&!String(days[j].note||'').trim()&&days[j].day===days[j-1].day+1)j++;
+  const len=j-i;
+  if(len>=3)pieces.push(days[i].day+'–'+days[j-1].day);
+  else for(let k=i;k<j;k++)pieces.push(String(days[k].day));
+  i=j;
+ }
+ return pieces.join(', ');
+}
+
 function shareFromSchedule(){
  const month=10,groups=DEPARTMENTS;let lines=['🌸 LỊCH OFF NV LẠC CẢNH THÁNG 10.2026 🌸'];
  for(const group of groups){
@@ -172,7 +192,7 @@ function shareFromSchedule(){
   lines.push('',group.toUpperCase());
   let index=0;people.forEach(p=>{
    const rs=db.records.filter(r=>r.person===p.id&&r.month===month&&r.status==='OFF').sort((a,b)=>a.day-b.day);
-   const relevantNotes=db.notes.filter(n=>(!n.month||n.month===month)&&norm(n.text).includes(norm(p.name)));
+   const relevantNotes=db.notes.filter(n=>(!n.month||n.month===month)&&(n.person===p.id||norm(n.text).includes(norm(p.name))));
    if(!rs.length&&!relevantNotes.length)return;
    lines.push((++index)+'/ '+p.name+': '+(rs.length?compactOffDetails(rs):'Chưa ghi ngày')+
     (!rs.length&&relevantNotes.length?' — '+relevantNotes.map(n=>n.text).join('; '):''));
@@ -213,6 +233,7 @@ function saveManualShare(){
  updateShareStatus();
 }
 function updateShareStatus(){
+ const counter=$('share-device-count');if(counter)counter.textContent='Dữ liệu iPhone hiện tại: '+rosterOffCount()+' ngày OFF trong tháng 10/2026';
  const label=$('share-status');
  if(label)label.textContent='Lịch OFF được chuyển thành văn bản Zalo; phần chỉnh tay được giữ nguyên, OFF mới được nối thêm.';
 }
@@ -223,10 +244,70 @@ function shareMeaningful(text){
 function shareRosterBaseline(){
  return shareFromSchedule();
 }
+function rosterOffCount(){
+ return db.records.filter(r=>r.status==='OFF'&&r.month===10).length;
+}
+function shareRosterSnapshot(){
+ // A snapshot is the authoritative data from THIS DEVICE, never a network sync.
+ return shareFromSchedule();
+}
+function saveShareText(value){
+ $('share-text').value=value;
+ try{localStorage.setItem(SHARE_DRAFT_KEY,value)}catch(e){}
+}
+function shareLineDays(line){
+ // Read day tokens only from the right side of a recognized employee line.
+ const result=new Set();
+ const body=line.slice(line.indexOf(':')+1);
+ for(const match of body.matchAll(/(?:^|[,; ]+)(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?(?=\s*(?:[,;() ]|$))/g)){
+  const a=Number(match[1]),b=Number(match[2]||match[1]);
+  if(a<1||a>31||b<a||b>31)continue;
+  for(let day=a;day<=b;day++)result.add(day);
+ }
+ return result;
+}
+function shareNamedLine(text,name){
+ const needle=norm(name);
+ return text.split('\n').find(line=>{
+  const cleaned=norm(line.trim().replace(/^(?:[•*-]\s*|\d+\s*[/.]\s*)/,''));
+  const colon=cleaned.indexOf(':');
+  return colon>0&&cleaned.slice(0,colon).trim()===needle;
+ })||'';
+}
+function missingFromShare(existing){
+ const entries=[];
+ for(const group of DEPARTMENTS){
+  for(const p of db.staff.filter(x=>departmentName(x.group)===group)){
+   const rs=db.records.filter(r=>r.person===p.id&&r.month===10&&r.status==='OFF').sort((a,b)=>a.day-b.day);
+   const pending=db.notes.filter(n=>n.pendingOff&&n.person===p.id&&(!n.month||n.month===10));
+   if(!rs.length&&!pending.length)continue;
+   const line=shareNamedLine(existing,p.name);
+   if(!line){
+    const content=rs.length?compactOffDetails(rs):'Chưa ghi ngày';
+    entries.push({group,display:p.name+': '+content+(pending.length?' — '+pending.map(n=>n.text).join('; '):'')});
+    continue;
+   }
+   const covered=shareLineDays(line);
+   const missing=rs.filter(r=>!covered.has(r.day));
+   if(missing.length)entries.push({group,display:p.name+': '+compactOffDetails(missing)});
+   if(pending.length&&!pending.some(n=>existing.includes(n.text)))entries.push({group,display:p.name+': '+pending.map(n=>n.text).join('; ')});
+  }
+ }
+ const general=db.notes.filter(n=>(!n.month||n.month===10)&&!n.pendingOff&&!n.person);
+ for(const note of general){
+  if(!existing.includes(note.text))entries.push({group:'Ghi chú chung',display:note.text});
+ }
+ return entries;
+}
 function initShareSync(){
- const el=$('share-text'),saved=localStorage.getItem(SHARE_DRAFT_KEY),baseline=shareRosterBaseline();
- if(saved!==null&&shareMeaningful(saved)){el.value=saved;shareDirty=true;}
- else {el.value=baseline;shareDirty=false;try{localStorage.setItem(SHARE_DRAFT_KEY,baseline)}catch(e){}}
+ const existing=localStorage.getItem(SHARE_DRAFT_KEY);
+ if(!shareMeaningful(existing)){
+  saveShareText(shareRosterSnapshot());
+  shareDirty=false;
+ }else{
+  $('share-text').value=existing;
+  shareDirty=true;
+ }
  if(!loadShareTrack())saveShareTrack(shareCurrentItems());
  updateShareStatus();
 }
@@ -240,42 +321,39 @@ function formatShareNewItems(entries){
  return [...groups].map(([group,items])=>group.toUpperCase()+'\n'+items.map(x=>'• '+x).join('\n')).join('\n\n');
 }
 function syncShareAdditions(){
- const previous=loadShareTrack(),current=shareCurrentItems();
  const saved=localStorage.getItem(SHARE_DRAFT_KEY);
- const existing=saved!==null?saved:($('share-text')?.value||'');
+ const existing=saved!==null?saved:($('share-text').value||'');
+ const latest=shareCurrentItems();
+ // Recover from empty/corrupted old drafts even if an old tracker says "synced".
  if(!shareMeaningful(existing)){
-  const baseline=shareRosterBaseline();
-  $('share-text').value=baseline;
-  try{localStorage.setItem(SHARE_DRAFT_KEY,baseline)}catch(e){}
-  saveShareTrack(current);
+  saveShareText(shareRosterSnapshot());
+  saveShareTrack(latest);
   updateShareStatus();
-  return Object.keys(current).length;
+  return rosterOffCount();
  }
- if(!previous){saveShareTrack(current);return 0}
- const changes=Object.entries(current).filter(([key,item])=>!previous[key]||previous[key].signature!==item.signature).map(([,item])=>item);
- saveShareTrack(current);
- if(!changes.length)return 0;
- const heading='📌 BỔ SUNG OFF / GHI CHÚ MỚI';
- const merged=existing.replace(/\s+$/,'')+'\n\n'+heading+'\n'+formatShareNewItems(changes);
- $('share-text').value=merged;shareDirty=true;
- try{localStorage.setItem(SHARE_DRAFT_KEY,merged)}catch(e){}
- updateShareStatus();
- return changes.length;
+ const additions=missingFromShare(existing);
+ if(!additions.length){saveShareTrack(latest);updateShareStatus();return 0}
+ const heading='📌 BỔ SUNG TỪ LỊCH OFF';
+ const merged=existing.replace(/\s+$/,'')+'\n\n'+heading+'\n'+formatShareNewItems(additions);
+ saveShareText(merged);shareDirty=true;saveShareTrack(latest);updateShareStatus();
+ return additions.length;
 }
 function showShareText(){
  const saved=localStorage.getItem(SHARE_DRAFT_KEY);
- if(saved!==null&&$('share-text').value!==saved)$('share-text').value=saved;
- if(!shareMeaningful($('share-text').value)){
-  const generated=shareRosterBaseline();
-  $('share-text').value=generated;try{localStorage.setItem(SHARE_DRAFT_KEY,generated)}catch(e){}
-  saveShareTrack(shareCurrentItems());
- }
+ if(saved!==null)$('share-text').value=saved;
+ if(!shareMeaningful($('share-text').value))saveShareText(shareRosterSnapshot());
+ // Reconcile on every tab entry so it doesn't depend on previous tracking metadata.
+ syncShareAdditions();
  updateShareStatus();
 }
 function regenerateShare(){
- const n=syncShareAdditions();
- showShareText();
- flash(n?'Đã đồng bộ '+n+' mục OFF vào văn bản.':'Văn bản đã đồng bộ với dữ liệu OFF hiện có.');
+ const before=rosterOffCount();
+ const additions=syncShareAdditions();
+ if(before===0){
+  flash('Không có ngày OFF tháng 10 trên thiết bị này. Kiểm tra lại tab Lịch tổng thể.');
+ }else{
+  flash(additions?'Đã bổ sung '+additions+' dòng theo lịch đang lưu.':'Đã kiểm tra '+before+' lượt OFF; văn bản đã có đủ.');
+ }
 }
 function openZaloApp(){
   // Use the Zalo app scheme; deliberately never fall back to zalo.me homepage.
