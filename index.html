@@ -65,12 +65,12 @@ body{background:linear-gradient(135deg,#fff0f6 0%,#fff8fb 56%,#fff0f4 100%);colo
 .entry-section .composer textarea{min-height:48px}
 </style></head><body><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
 <div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="handleUnifiedEntry()" placeholder="🔎 Tìm tên / ghi chú...&#10;Hoặc: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tìm nhanh · TÊN OFF [ngày/tháng] [ghi chú]</span><div class="entry-buttons"><button type="button" id="voice-btn" class="voice-btn" onclick="toggleVoiceInput()" aria-label="Nhập bằng giọng nói" aria-pressed="false"><span class="voice-icon">🎤</span><span id="voice-label">Nói</span></button><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div><div id="voice-status" role="status" aria-live="polite" class="voice-status" hidden></div></div></section><section class="section results-section"><div class="quick-search"><span class="unified-search-help">🔎 Tìm trực tiếp tại ô nhập phía trên</span><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
-<div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự cập nhật theo lịch OFF và ghi chú đã lưu. Sửa tay sẽ giữ bản nháp.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="shareDirty=true;try{localStorage.setItem('lich-off-share-draft-2026-10',this.value)}catch(e){}"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Tạo lại từ lịch</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
+<div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-status" style="margin:5px 0">Tự bổ sung OFF mới. Nội dung bạn sửa tay được giữ nguyên.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="saveManualShare()"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Bổ sung OFF mới</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
 <div id="roster" class="hidden"><section class="section"><div class="toolbar"><div><h2 style="margin:0">▦ Lịch tổng thể</h2><span class="sub">Bấm ô ngày để đổi OFF / đi làm và ghi chú</span></div><div class="chips"><select id="r-month" onchange="renderRoster()"></select><select id="r-group" onchange="renderRoster()"></select><button class="btn sm" onclick="exportXLSX()">⇩ Excel</button></div></div><div class="toolbar" style="margin-top:12px"><input style="max-width:250px" type="search" id="r-search" oninput="renderRoster()" placeholder="Tìm nhân viên..."><div class="chips"><button class="chip selected" id="mode-grid" onclick="changeMode('grid')">Bảng 1–31</button><button class="chip" id="mode-list" onclick="changeMode('list')">Theo ngày</button></div></div><div id="grid-view" class="calendar-wrap"></div><div id="list-view" class="hidden"><div class="toolbar" style="margin-top:12px"><button class="btn sm" onclick="shiftDay(-1)">‹ Ngày trước</button><strong id="current-day"></strong><button class="btn sm" onclick="shiftDay(1)">Ngày sau ›</button></div><div id="day-list"></div></div><div class="hint">Tên và ảnh được ghim ở cột bên trái. Kéo ngang để xem đủ 31 ngày. Chạm ảnh/tên để xem hồ sơ.</div></section></div><div class="footer">LỊCH OFF · Demo offline · 2 màn hình · Dữ liệu thử nghiệm</div></main>
 <div id="modalback" class="modalback" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div><div class="toast" id="toast"></div>
 <script>
 const KEY='lich-off-demo-v4';const year=2026;const defaults={staff:[{id:'hong',name:'Hồng',group:'PHỤC VỤ',photo:''},{id:'phuc',name:'Phúc',group:'PHỤC VỤ',photo:''},{id:'trang',name:'Trang',group:'TỔ NAM',photo:''},{id:'hai',name:'Hải',group:'KHO QUẦY',photo:''},{id:'quang',name:'Quang',group:'TỔ NAM',photo:''}],records:[{person:'hong',day:5,month:10,status:'OFF',note:'Nghỉ việc riêng'},{person:'hong',day:20,month:10,status:'OFF',note:'Về quê'},{person:'phuc',day:12,month:10,status:'OFF',note:'Nghỉ phép'},{person:'trang',day:16,month:10,status:'OFF',note:'Đã báo quản lý'},{person:'hai',day:18,month:10,status:'OFF',note:'Việc cá nhân'}],notes:[{month:10,day:18,text:'Cần bổ sung nhân viên ca tối'}]};let db;try{db=JSON.parse(localStorage.getItem(KEY))||structuredClone(defaults)}catch{db=structuredClone(defaults)}let rosterMode='grid',rosterDay=16,editCell=null;
-const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');const dateMax=m=>new Date(year,m,0).getDate();const staffBy=id=>db.staff.find(p=>p.id===id);const rec=(p,d,m)=>db.records.find(r=>r.person===p&&r.day===d&&r.month===m);function persist(){try{normalizeDepartments();localStorage.setItem(KEY,JSON.stringify(db));if(typeof shareDirty!=='undefined'&&!shareDirty&&document.getElementById('share-text'))document.getElementById('share-text').value=shareFromSchedule();return true}catch(e){alert('Bộ nhớ thiết bị đầy. Hãy xuất sao lưu, hoặc dùng ảnh có kích thước nhỏ hơn.');return false}}function flash(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3000)}function avatar(p,big=false){if(!p)return '';return p.photo?`<img class="avatar ${big?'big':''}" src="${p.photo}" alt="Ảnh ${esc(p.name)}">`:`<div class="avatar ${big?'big':''}">${esc(p.name.slice(0,1).toUpperCase())}</div>`}function page(t){$('home').classList.toggle('hidden',t!=='home');$('roster').classList.toggle('hidden',t!=='roster');$('text').classList.toggle('hidden',t!=='text');$('tab-home').classList.toggle('active',t==='home');$('tab-roster').classList.toggle('active',t==='roster');$('tab-text').classList.toggle('active',t==='text');if(t==='roster'){renderRoster();tipOnce('roster')}if(t==='text'){showShareText();tipOnce('text')}}function sample(s){$('entry').value=s;suggest();$('entry').focus()}function suggest(){const s=$('entry').value.trim(),box=$('suggestions');box.innerHTML='';if(!s){box.classList.remove('show');return}const first=norm(s.split(/\s+/)[0]);let matches=db.staff.filter(p=>norm(p.name).startsWith(first)).slice(0,5);if(/\b(off|nghi|lam)\b/.test(norm(s))){box.classList.remove('show');return}if(!matches.length){box.classList.remove('show');return}box.innerHTML='<div class="sub" style="padding:3px 7px">Gợi ý tên nhân viên</div>'+matches.map(p=>`<button class="suggest" onclick="pickName('${p.id}')">${avatar(p)}<span><b>${esc(p.name)}</b><br><span class="sub">${esc(p.group)}</span></span><span style="margin-left:auto;color:#80b4ab">↵</span></button>`).join('');box.classList.add('show')}function pickName(id){let p=staffBy(id);$('entry').value=p.name+' OFF ';$('suggestions').classList.remove('show');renderResults();$('entry').focus()}
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');const dateMax=m=>new Date(year,m,0).getDate();const staffBy=id=>db.staff.find(p=>p.id===id);const rec=(p,d,m)=>db.records.find(r=>r.person===p&&r.day===d&&r.month===m);function persist(){try{normalizeDepartments();localStorage.setItem(KEY,JSON.stringify(db));if(typeof syncShareAdditions==='function')syncShareAdditions();return true}catch(e){alert('Bộ nhớ thiết bị đầy. Hãy xuất sao lưu, hoặc dùng ảnh có kích thước nhỏ hơn.');return false}}function flash(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3000)}function avatar(p,big=false){if(!p)return '';return p.photo?`<img class="avatar ${big?'big':''}" src="${p.photo}" alt="Ảnh ${esc(p.name)}">`:`<div class="avatar ${big?'big':''}">${esc(p.name.slice(0,1).toUpperCase())}</div>`}function page(t){$('home').classList.toggle('hidden',t!=='home');$('roster').classList.toggle('hidden',t!=='roster');$('text').classList.toggle('hidden',t!=='text');$('tab-home').classList.toggle('active',t==='home');$('tab-roster').classList.toggle('active',t==='roster');$('tab-text').classList.toggle('active',t==='text');if(t==='roster'){renderRoster();tipOnce('roster')}if(t==='text'){showShareText();tipOnce('text')}}function sample(s){$('entry').value=s;suggest();$('entry').focus()}function suggest(){const s=$('entry').value.trim(),box=$('suggestions');box.innerHTML='';if(!s){box.classList.remove('show');return}const first=norm(s.split(/\s+/)[0]);let matches=db.staff.filter(p=>norm(p.name).startsWith(first)).slice(0,5);if(/\b(off|nghi|lam)\b/.test(norm(s))){box.classList.remove('show');return}if(!matches.length){box.classList.remove('show');return}box.innerHTML='<div class="sub" style="padding:3px 7px">Gợi ý tên nhân viên</div>'+matches.map(p=>`<button class="suggest" onclick="pickName('${p.id}')">${avatar(p)}<span><b>${esc(p.name)}</b><br><span class="sub">${esc(p.group)}</span></span><span style="margin-left:auto;color:#80b4ab">↵</span></button>`).join('');box.classList.add('show')}function pickName(id){let p=staffBy(id);$('entry').value=p.name+' OFF ';$('suggestions').classList.remove('show');renderResults();$('entry').focus()}
 
 // Danh sách trích từ 2 ảnh tháng 10/2026. Các dấu OFF chưa đủ rõ để nhập chính xác.
 const IMAGE_OCT2026_GROUPS={"KHO QUẦY":["KHOA TQL","HÂN QL","NGÂN QL","LIÊN QL","MỸ QL","LINH QL","OANH QL","PHƯƠNG QL","H.HẠNH QL","DANH NGUYỄN QL","QUỐC QL"],"PHỤC VỤ NỮ":["DUYÊN DUYÊN","HỒNG","QUẾ ANH","TIÊN TIÊN","KIỀU","CHU CHU","MỸ DUYÊN","YẾN NHI","THẢO NGUYÊN","TIẾN","HUỲNH NHƯ","TRÚC ANH","TIẾN KIM","BÌNH ĐĂNG","NGỌC NGỌC","KHẢ AN","PHÚC","KỲ","TRÀ"],"CA KHÔNG LƯƠNG":["TUYỀN","HOA","NGÂN MỚI","TRÂM ANH","NHƯ Ý","NGÂN","NGỌC HIỀN","NGỌC TIÊN","ANH DƯƠNG","XUÂN LÊ","KIM NGÂN","SAN SAN","BẢO TRÂM","NGỌC SƯƠNG","BẢO ANH","NGUYỆT MOON","NHƯ NHIÊN","KIỀU VY","DOLLY","MẪN","TRƯƠNG NHI","HỒNG THẢO","HEONHEON","DƯƠNG DƯƠNG"],"TỔ NAM":["QUANG","DUY","VINH","THIỆN","TÂM","PHONG","TRỌNG","NHẬT DUY","THƯƠNG","NAM"]};
@@ -125,7 +125,7 @@ function applyOctober2026(initial=false){
   if(item.undated)db.notes.push({month:10,day:null,text:item.name+' ('+group+'): '+item.undated,source:OCT26_IMPORT_TAG});
  }
  if(!persist())return;
- if(!initial){renderAll();shareDirty=false;localStorage.removeItem('lich-off-share-draft-2026-10');regenerateShare();flash('Đã cập nhật '+offCount+' ô OFF tháng 10, '+created+' nhân viên mới.');}
+ if(!initial){renderAll();regenerateShare();flash('Đã cập nhật '+offCount+' ô OFF tháng 10, '+created+' nhân viên mới.');}
 }
 function importZaloOctober(){applyOctober2026(false)}
 function shareFromSchedule(){
@@ -146,8 +146,76 @@ function shareFromSchedule(){
  if(nt.length){lines.push('','GHI CHÚ CHUNG');for(const n of nt)lines.push((n.day?n.day+'/10: ':'')+n.text);}
  return lines.join('\n');
 }
-function showShareText(){const el=$('share-text');const saved=localStorage.getItem('lich-off-share-draft-2026-10');if(!el.value&&saved){el.value=saved;shareDirty=true}else if(!shareDirty||!el.value)el.value=shareFromSchedule(); const mark=document.getElementById('share-status');if(mark)mark.textContent=shareDirty?'Bản nháp đã sửa tay • Bấm Tạo lại từ lịch để đồng bộ':'Tự cập nhật theo lịch OFF và ghi chú đã lưu'}
-function regenerateShare(){if(shareDirty&&$('share-text').value&&!confirm('Tạo lại văn bản sẽ thay nội dung bạn vừa sửa. Tiếp tục?'))return;shareDirty=false;localStorage.removeItem('lich-off-share-draft-2026-10');$('share-text').value=shareFromSchedule();showShareText();}
+const SHARE_DRAFT_KEY='lich-off-share-draft-2026-10';
+const SHARE_TRACK_KEY='lich-off-share-tracked-2026-10-v2';
+let shareDirty=false;
+function shareCurrentItems(){
+ const result={};
+ for(const r of db.records){
+  if(r.month!==10||r.status!=='OFF')continue;
+  const p=staffBy(r.person),name=p?.name||r.person;
+  result['off:'+r.person+':'+r.day]={name,group:p?.group||'',day:r.day,display:name+': '+r.day+'/10 OFF'+(r.note?' ('+r.note+')':'')};
+  result['off:'+r.person+':'+r.day].signature=(r.note||'').trim();
+ }
+ for(const n of db.notes){
+  if(n.month&&n.month!==10)continue;
+  // Key off person and month for editable pending notes; otherwise text uniquely identifies note.
+  const key=n.pendingOff?'pending:'+n.person:'note:'+n.text+':'+(n.day||0);
+  result[key]={name:staffBy(n.person)?.name||'',display:n.pendingOff?n.text:'Ghi chú: '+(n.day?n.day+'/10 — ':'')+n.text,signature:n.text};
+ }
+ return result;
+}
+function loadShareTrack(){
+ try{return JSON.parse(localStorage.getItem(SHARE_TRACK_KEY)||'null')}catch(e){return null}
+}
+function saveShareTrack(items){
+ try{localStorage.setItem(SHARE_TRACK_KEY,JSON.stringify(items))}catch(e){}
+}
+function saveManualShare(){
+ shareDirty=true;
+ try{localStorage.setItem(SHARE_DRAFT_KEY,$('share-text').value)}catch(e){}
+ updateShareStatus();
+}
+function updateShareStatus(){
+ const label=$('share-status');
+ if(label)label.textContent='Bản văn được giữ nguyên • OFF mới sẽ được bổ sung ở cuối, không sửa nội dung đã chỉnh tay.';
+}
+function initShareSync(){
+ const el=$('share-text'),saved=localStorage.getItem(SHARE_DRAFT_KEY);
+ if(saved!==null){el.value=saved;shareDirty=true;}
+ else{el.value=shareFromSchedule();try{localStorage.setItem(SHARE_DRAFT_KEY,el.value)}catch(e){}}
+ // Migrating to the tracking feature: preserve existing text; only future edits are new.
+ if(!loadShareTrack())saveShareTrack(shareCurrentItems());
+ updateShareStatus();
+}
+function syncShareAdditions(){
+ const previous=loadShareTrack(),current=shareCurrentItems();
+ if(!previous){saveShareTrack(current);return 0}
+ const additions=Object.entries(current).filter(([key,item])=>!previous[key]||previous[key].signature!==item.signature).map(([,item])=>item.display);
+ saveShareTrack(current);
+ if(!additions.length)return 0;
+ const el=$('share-text');
+ const existing=localStorage.getItem(SHARE_DRAFT_KEY);
+ const base=existing!==null?existing:(el?.value||shareFromSchedule());
+ const heading='📌 BỔ SUNG OFF / GHI CHÚ MỚI';
+ const extra=(base.includes(heading)?'':'\n\n'+heading)+'\n'+additions.map(x=>'• '+x).join('\n');
+ const merged=base+extra;
+ if(el)el.value=merged;
+ shareDirty=true;
+ try{localStorage.setItem(SHARE_DRAFT_KEY,merged)}catch(e){}
+ updateShareStatus();
+ return additions.length;
+}
+function showShareText(){
+ const saved=localStorage.getItem(SHARE_DRAFT_KEY);
+ if(saved!==null&&$('share-text').value!==saved)$('share-text').value=saved;
+ updateShareStatus();
+}
+function regenerateShare(){
+ const n=syncShareAdditions();
+ showShareText();
+ flash(n?'Đã bổ sung '+n+' cập nhật mới, giữ nguyên bản sửa tay.':'Đã đồng bộ; không có OFF mới cần bổ sung.');
+}
 function openZaloApp(){
   // Use the Zalo app scheme; deliberately never fall back to zalo.me homepage.
   window.location.href='zalo://launch';
@@ -217,6 +285,13 @@ function setVoiceState(isOn,message){
 }
 function toggleVoiceInput(){
  if(voiceActive&&voiceRecognizer){voiceRecognizer.stop();return}
+ const ua=navigator.userAgent||'';
+ const isiOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ if(isiOS){
+  $('entry').focus();
+  setVoiceState(false,'Trên iPhone: chạm 🎙 trên bàn phím để đọc tiếng Việt. Web không thể tự bật tính năng chính tả của iOS.');
+  return;
+ }
  const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!Speech){
   $('entry').focus();
@@ -393,5 +468,5 @@ function exportXLSX(){
   download(blob,`Lich_OFF_Thang_${String(month).padStart(2,'0')}_${year}.xlsx`);
   flash('Đã xuất Excel gồm lịch tháng, tất cả chi tiết, ghi chú và tổng hợp 12 tháng');tipOnce('export');
 }
-if(!localStorage.getItem(KEY))applyOctober2026(true);fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();setTimeout(()=>tipOnce('input'),700);
+if(!localStorage.getItem(KEY))applyOctober2026(true);fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();initShareSync();setTimeout(()=>tipOnce('input'),700);
 </script><script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}</script></body></html>
