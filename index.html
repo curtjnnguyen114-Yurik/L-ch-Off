@@ -99,6 +99,16 @@ body{background:linear-gradient(135deg,#fff0f6 0%,#fff8fb 56%,#fff0f4 100%);colo
 
 .refresh-top-btn{border:1.5px solid #d8759a;color:#b94d79;border-radius:50%;width:34px;height:34px;min-width:34px;background:#fff3f8;font-size:23px;display:grid;place-items:center;padding:0;line-height:1;touch-action:manipulation}
 @media(max-width:390px){.refresh-top-btn{width:30px;height:30px;min-width:30px}}
+
+/* iOS roster popup: readable long notes and tappable day markers. */
+#roster .cal td.day{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:#eaa2c277}
+#roster .cal td.day:active{outline:2px solid #cc5b8b;outline-offset:-2px}
+#roster .cal td.day:focus-visible{outline:2px solid #b54a79;outline-offset:-2px}
+.modalback{z-index:1000}
+.modalback .modal{max-height:min(85dvh,720px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.cell-readonly{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.cell-notes{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff6fa;border:1px solid #f1cbdc;border-radius:12px;padding:10px 12px;margin-top:6px;max-height:45dvh;overflow-y:auto}
+.cell-notes p{margin:0 0 9px}.cell-notes p:last-child{margin-bottom:0}
 </style></head><body><div id="pull-refresh" class="pull-refresh" aria-live="polite" aria-hidden="true"><span id="pull-refresh-icon">↓</span><span id="pull-refresh-text">Vuốt xuống để cập nhật</span></div><main class="app"><header class="top"><div class="brand"><div class="logo">🗓️</div><div><h1>LỊCH OFF</h1></div></div><button type="button" class="refresh-top-btn" onclick="refreshNewVersion()" aria-label="Tải bản mới" title="Tải bản mới">⟳</button><button type="button" id="help-button" class="help-button" aria-label="Xem hướng dẫn" title="Hướng dẫn" onclick="openGuide()">?</button><details class="utility-menu" id="utility-menu"><summary aria-label="Mở tiện ích" title="Tiện ích">☰</summary><div class="utility-panel"><button onclick="importStaffFromImages()">📋 Nhập nhân viên từ ảnh tháng 10</button><button onclick="openStaff();document.getElementById('utility-menu').open=false">👤 Nhân viên / Ảnh</button><button onclick="exportXLSX();document.getElementById('utility-menu').open=false">📊 Xuất Excel</button><button onclick="backup();document.getElementById('utility-menu').open=false">⬇ Sao lưu</button><button onclick="document.getElementById('backup-file').click();document.getElementById('utility-menu').open=false">⬆ Khôi phục</button><div class="small muted" style="padding:7px 10px">Dữ liệu chỉ lưu trên thiết bị</div></div></details></header><input id="backup-file" type="file" accept=".json,application/json" hidden onchange="restore(event)"><nav class="tabs"><button id="tab-home" class="active" onclick="page('home')">Nhập / Tìm</button><button id="tab-roster" onclick="page('roster')">Lịch tổng thể</button><button id="tab-text" onclick="page('text')">Văn bản</button></nav>
 <div id="home"><div class="compact-home"><section class="section entry-section"><div class="composer"><textarea id="entry" oninput="handleUnifiedEntry()" placeholder="🔎 Tìm tên / ghi chú...&#10;Hoặc: Hồng OFF 20/10 về quê"></textarea><div id="suggestions" class="suggestions"></div><div class="actions"><span class="small muted">Tìm nhanh · TÊN OFF [ngày/tháng] [ghi chú]</span><div class="entry-buttons"><button type="button" id="voice-btn" class="voice-btn" onclick="toggleVoiceInput()" aria-label="Nhập bằng giọng nói" aria-pressed="false"><span class="voice-icon">🎤</span><span id="voice-label">Nói</span></button><button class="btn primary sm" onclick="saveInput()">✓ LƯU</button></div></div><div id="voice-status" role="status" aria-live="polite" class="voice-status" hidden></div></div></section><section class="section results-section"><div class="quick-search"><span class="unified-search-help">🔎 Tìm trực tiếp tại ô nhập phía trên</span><details class="filter-more" id="filter-more"><summary aria-label="Lọc chi tiết">⚙ Lọc</summary><div class="filter-grid"><select id="f-name" onchange="renderResults()"></select><select id="f-month" onchange="renderResults()"></select><select id="f-day" onchange="renderResults()"></select><select id="f-status" onchange="renderResults()"><option value="ALL">Tất cả trạng thái</option><option>OFF</option><option>ĐI LÀM</option><option>GHI CHÚ</option></select></div><button class="mini-link" onclick="resetFilters()">Xóa bộ lọc</button></details></div><div id="large-profile"></div><div class="labelrow result-heading"><h2>Thông tin OFF</h2><span class="sub" id="results-count"></span></div><div id="results"></div></section></div><div class="compact-stats" aria-label="Thống kê"><span>Nhân viên: <b id="s-people">0</b></span><span>OFF: <b id="s-off">0</b></span><span>Ghi chú: <b id="s-notes">0</b></span></div></div>
 <div id="text" class="hidden"><section class="section text-panel"><div class="toolbar"><b>📋 LỊCH OFF · THÁNG 10/2026</b><button class="btn sm" onclick="importZaloOctober()">Cập nhật lịch 10/2026</button></div><p class="sub" id="share-device-count" style="margin:4px 0;font-weight:700"></p><p class="sub" id="share-status" style="margin:5px 0">Tạo nội dung Zalo từ OFF trên thiết bị này; dòng sửa tay giữ nguyên, OFF thiếu được bổ sung.</p><textarea id="share-text" class="share-text" placeholder="Văn bản lịch OFF để gửi Zalo…" oninput="saveManualShare()"></textarea><div class="actions" style="margin-top:9px"><button class="btn sm" onclick="regenerateShare()">↻ Đồng bộ lịch OFF</button><button class="btn sm" onclick="shortenShareText()">⇄ Rút gọn</button><button class="btn primary sm" onclick="copyAndOpenZalo()">📤 Gửi · Sao chép</button></div><div class="small muted" style="margin-top:8px">Mở Zalo rồi chọn nhóm và Dán. iOS không cho web tự gửi/dán tin nhắn vào nhóm.</div></section></div>
@@ -642,7 +652,7 @@ function renderRoster(){
    const rows=people.map((p,i)=>{
     const offRows=db.records.filter(r=>r.person===p.id&&r.month===month&&r.status==='OFF').sort((a,b)=>a.day-b.day);
     const cells=days.map(d=>{
-     const r=rec(p.id,d,month);return '<td class="day '+(r?.status==='OFF'?'off':'work')+'" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+d+','+month+')" title="'+esc(r?.note||'Chạm để cập nhật')+'">'+(r?.status==='OFF'?(r.note?'📝':'X'):r?.status==='ĐI LÀM'?'·':'')+'</td>';
+     const r=rec(p.id,d,month);return '<td tabindex="0" role="button" aria-label="Xem lịch '+esc(p.name)+' ngày '+d+'/'+month+'" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}" class="day '+(r?.status==='OFF'?'off':'work')+'" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+d+','+month+')" title="'+esc(r?.note||'Chạm để cập nhật')+'">'+(r?.status==='OFF'?(r.note?'📝':'X'):r?.status==='ĐI LÀM'?'·':'')+'</td>';
     }).join('');
     return '<tr><td class="namecell"><div class="nameinside" onclick="openStaff('+JSON.stringify(p.id).replace(/"/g,'&quot;')+')"><span class="roster-name"><b>'+(i+1)+'. '+esc(p.name)+'</b></span></div></td>'+cells+'<td class="total-cell">'+offRows.length+'</td></tr>';
    }).join('');
@@ -656,6 +666,28 @@ function renderRoster(){
    return '<div class="listrow">'+avatar(p)+'<div style="flex:1;min-width:0"><b>'+(i+1)+'. '+esc(p.name)+'</b><div class="sub">'+esc(r?.note||'')+'</div></div><span class="'+(r?.status==='OFF'?'tag':'small muted')+'">'+esc(r?.status||'—')+'</span><button class="btn sm" onclick="openCell('+JSON.stringify(p.id).replace(/"/g,'&quot;')+','+rosterDay+','+month+')">Sửa</button></div>';
   }).join('')).join('')||'<div class="empty">Không tìm thấy nhân viên</div>';
  }
+}
+// Shared modal controller for roster notes, employee profiles and help dialogs.
+// Keep the modal outside the scrolling calendar so iOS can display it over sticky cells.
+function modal(html){
+ const overlay=document.getElementById('modalback');
+ const content=document.getElementById('modal');
+ if(!overlay||!content){console.error('Không tìm thấy khung popup');return}
+ content.innerHTML=html;
+ overlay.classList.add('open');
+ overlay.setAttribute('aria-hidden','false');
+ content.setAttribute('role','dialog');
+ content.setAttribute('aria-modal','true');
+ content.setAttribute('aria-label','Chi tiết lịch OFF');
+}
+function closeModal(){
+ const overlay=document.getElementById('modalback');
+ const content=document.getElementById('modal');
+ if(!overlay||!content)return;
+ overlay.classList.remove('open');
+ overlay.setAttribute('aria-hidden','true');
+ content.innerHTML='';
+ editCell=null;
 }
 function openCell(id,day,month){
  const p=staffBy(id),r=rec(id,day,month);if(!p)return;
