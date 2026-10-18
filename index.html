@@ -109,7 +109,7 @@ const KEY='lich-off-demo-v4';const year=2026;const defaults={staff:[{id:'hong',n
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');const dateMax=m=>new Date(year,m,0).getDate();const staffBy=id=>db.staff.find(p=>p.id===id);const rec=(p,d,m)=>db.records.find(r=>r.person===p&&r.day===d&&r.month===m);function persist(){try{normalizeDepartments();localStorage.setItem(KEY,JSON.stringify(db));if(typeof syncShareAdditions==='function')syncShareAdditions();return true}catch(e){alert('Bộ nhớ thiết bị đầy. Hãy xuất sao lưu, hoặc dùng ảnh có kích thước nhỏ hơn.');return false}}function flash(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3000)}function avatar(p,big=false){if(!p)return '';return p.photo?`<img class="avatar ${big?'big':''}" src="${p.photo}" alt="Ảnh ${esc(p.name)}">`:`<div class="avatar ${big?'big':''}">${esc(p.name.slice(0,1).toUpperCase())}</div>`}function page(t){$('home').classList.toggle('hidden',t!=='home');$('roster').classList.toggle('hidden',t!=='roster');$('text').classList.toggle('hidden',t!=='text');$('tab-home').classList.toggle('active',t==='home');$('tab-roster').classList.toggle('active',t==='roster');$('tab-text').classList.toggle('active',t==='text');if(t==='roster'){renderRoster();tipOnce('roster')}if(t==='text'){showShareText();tipOnce('text')}}function sample(s){$('entry').value=s;handleUnifiedEntry();$('entry').focus()}function suggest(){const s=$('entry').value.trim(),box=$('suggestions');box.innerHTML='';if(!s){box.classList.remove('show');return}const first=norm(s.split(/\s+/)[0]);let matches=db.staff.filter(p=>norm(p.name).startsWith(first)).slice(0,5);if(/\b(off|nghi|lam)\b/.test(norm(s))){box.classList.remove('show');return}if(!matches.length){box.classList.remove('show');return}box.innerHTML='<div class="sub" style="padding:3px 7px">Gợi ý tên nhân viên</div>'+matches.map(p=>`<button class="suggest" onclick="pickName('${p.id}')">${avatar(p)}<span><b>${esc(p.name)}</b><br><span class="sub">${esc(p.group)}</span></span><span style="margin-left:auto;color:#80b4ab">↵</span></button>`).join('');box.classList.add('show')}function pickName(id){let p=staffBy(id);$('entry').value=p.name+' OFF ';saveEntryDraft();$('suggestions').classList.remove('show');renderResults();$('entry').focus()}
 
 // Danh sách trích từ 2 ảnh tháng 10/2026. Các dấu OFF chưa đủ rõ để nhập chính xác.
-const IMAGE_OCT2026_GROUPS={"KHO QUẦY":["KHOA TQL","HÂN QL","NGÂN QL","LIÊN QL","MỸ QL","LINH QL","OANH QL","PHƯƠNG QL","H.HẠNH QL","DANH NGUYỄN QL","QUỐC QL"],"PHỤC VỤ NỮ":["DUYÊN DUYÊN","HỒNG","QUẾ ANH","TIÊN TIÊN","KIỀU","CHU CHU","MỸ DUYÊN","YẾN NHI","THẢO NGUYÊN","TIẾN","HUỲNH NHƯ","TRÚC ANH","TIẾN KIM","BÌNH ĐĂNG","NGỌC NGỌC","KHẢ AN","PHÚC","KỲ","TRÀ"],"CA KHÔNG LƯƠNG":["TUYỀN","HOA","NGÂN MỚI","TRÂM ANH","NHƯ Ý","NGÂN","NGỌC HIỀN","NGỌC TIÊN","ANH DƯƠNG","XUÂN LÊ","KIM NGÂN","SAN SAN","BẢO TRÂM","NGỌC SƯƠNG","BẢO ANH","NGUYỆT MOON","NHƯ NHIÊN","KIỀU VY","DOLLY","MẪN","TRƯƠNG NHI","HỒNG THẢO","HEONHEON","DƯƠNG DƯƠNG"],"TỔ NAM":["QUANG","DUY","VINH","THIỆN","TÂM","PHONG","TRỌNG","NHẬT DUY","THƯƠNG","NAM"]};
+const IMAGE_OCT2026_GROUPS={"KHO QUẦY":["KHOA TQL","HÂN QL","NGÂN QL","LIÊN QL","MỸ QL","LINH QL","OANH QL","PHƯƠNG QL","H.HẠNH QL","DANH NGUYỄN QL","QUỐC QL"],"PHỤC VỤ NỮ":["DUYÊN DUYÊN","HỒNG","QUẾ ANH","TIÊN TIÊN","KIỀU","CHU CHU","MỸ DUYÊN","YẾN NHI","THẢO NGUYÊN","TIẾN","HUỲNH NHƯ","TRÚC ANH","TIẾN KIM","BÌNH ĐĂNG","NGỌC NGỌC","KHẢ AN","PHÚC","KỲ","TRÀ"],"CA KHÔNG LƯƠNG":["TUYỀN","HOA","NGÂN MỚI","TRÂM ANH","NHƯ Ý","NGHI","NGỌC HIỀN","NGỌC TIÊN","ÁNH DƯƠNG","XUÂN LÊ","KIM NGÂN","SAN SAN","BẢO TRÂM","NGỌC SƯƠNG","BẢO ANH","NGUYỆT MOON","NHUN NHUN","KIỀU VY","DOLLY","MẪN","TRƯƠNG NHI","HỒNG THẢO","TRÀ","DƯƠNG DƯƠNG","GIA HÂN","DIỄM HƯƠNG","BÌNH ĐĂNG"],"TỔ NAM":["QUANG","DUY","VINH","THIỆN","TÂM","PHONG","TRỌNG","NHẬT DUY","THƯƠNG","NAM"]};
 
 const DEPARTMENTS=["Team Leader","Phục vụ nữ (có lương)","Phục vụ nữ (Ca không lương)","Nam tiếp thực + tả hổ","Tạp vụ"];
 const LEGACY_DEPARTMENTS={"KHO QUẦY":"Team Leader","TEAM LEADER":"Team Leader","PHỤC VỤ NỮ":"Phục vụ nữ (có lương)","PHỤC VỤ":"Phục vụ nữ (có lương)","CA KHÔNG LƯƠNG":"Phục vụ nữ (Ca không lương)","TỔ NAM":"Nam tiếp thực + tả hổ","TẠP VỤ":"Tạp vụ"};
@@ -761,5 +761,46 @@ function exportXLSX(){
   download(blob,`Lich_OFF_Thang_${String(month).padStart(2,'0')}_${year}.xlsx`);
   flash('Đã xuất Excel gồm lịch tháng, tất cả chi tiết, ghi chú và tổng hợp 12 tháng');tipOnce('export');
 }
-if(!localStorage.getItem(KEY))applyOctober2026(true);fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();initShareSync();restoreEntryDraft();initPullToRefresh();setTimeout(()=>tipOnce('input'),700);
+
+const UNPAID_ROSTER_OCT26=["Tuyền","Hoa","Ngân Mới","Trâm Anh","Như Ý","Nghi","Ngọc Hiền","Ngọc Tiên","Ánh Dương","Xuân Lê","Kim Ngân","San San","Bảo Trâm","Ngọc Sương","Bảo Anh","Nguyệt Moon","Nhun Nhun","Kiều Vy","Dolly","Mẫn","Trương Nhi","Hồng Thảo","Trà","Dương Dương","Gia Hân","Diễm Hương","Bình Đăng"];
+const UNPAID_ROSTER_MIGRATION='lich-off-unpaid-roster-2026-10-v1';
+// Apply the new staff grouping exactly once per device, preserving staff IDs, photos,
+// OFF records, pending notes and the manually edited Zalo draft.
+function migrateUnpaidRosterOctober(){
+ if(localStorage.getItem(UNPAID_ROSTER_MIGRATION)==='done')return;
+ const group='Phục vụ nữ (Ca không lương)';
+ const original=JSON.stringify(db.staff);
+ const existingNames=new Set(UNPAID_ROSTER_OCT26.map(x=>norm(x)));
+ // Known misread in an older image import: the screenshot now says "Nhun Nhun".
+ const oldAlias=db.staff.find(p=>departmentName(p.group)===group&&norm(p.name)==='nhu nhien');
+ if(oldAlias&&!db.staff.some(p=>norm(p.name)===norm('Nhun Nhun')))oldAlias.name='Nhun Nhun';
+ for(const name of UNPAID_ROSTER_OCT26){
+  const exact=db.staff.filter(p=>norm(p.name)===norm(name));
+  let p=exact.find(p=>departmentName(p.group)===group);
+  if(!p)p=exact.find(p=>departmentName(p.group)!=='Team Leader'&&departmentName(p.group)!=='Nam tiếp thực + tả hổ');
+  if(!p){
+   let id='unpaid_oct26_'+norm(name).replace(/[^a-z0-9]/g,'')+'_'+db.staff.length;
+   while(db.staff.some(x=>x.id===id))id+='_1';
+   p={id,name,group,photo:''};db.staff.push(p);
+  }else{
+   p.name=name;
+   p.group=group;
+  }
+ }
+ // Order this department according to the photographed Excel list.
+ const ordered=UNPAID_ROSTER_OCT26.map(name=>db.staff.find(p=>norm(p.name)===norm(name)&&departmentName(p.group)===group)).filter(Boolean);
+ const wantedIds=new Set(ordered.map(p=>p.id));
+ const first=db.staff.findIndex(p=>departmentName(p.group)===group);
+ const other=db.staff.filter(p=>!wantedIds.has(p.id));
+ const insertAt=first<0?other.length:Math.min(first,other.length);
+ db.staff=[...other.slice(0,insertAt),...ordered,...other.slice(insertAt)];
+ try{
+  if(JSON.stringify(db.staff)!==original)localStorage.setItem(KEY,JSON.stringify(db));
+  localStorage.setItem(UNPAID_ROSTER_MIGRATION,'done');
+ }catch(e){
+  // Never mark migration complete if saving fails.
+  console.warn('Không lưu được danh sách ca không lương',e);
+ }
+}
+if(!localStorage.getItem(KEY))applyOctober2026(true);migrateUnpaidRosterOctober();fillSelectors();$('f-month').value='10';$('r-month').value='10';renderAll();initShareSync();restoreEntryDraft();initPullToRefresh();setTimeout(()=>tipOnce('input'),700);
 </script><script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}</script></body></html>
